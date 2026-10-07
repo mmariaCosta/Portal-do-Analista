@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   sanitizeInput,
-  isValidEmail,
   checkRateLimit,
   registerFailedAttempt,
   resetRateLimit,
@@ -10,72 +9,81 @@ import {
 } from '../utils/security';
 
 export default function Login() {
-  const [user, setUser] = useState('');
-  const [pass, setPass] = useState('');
-  const [filial, setFilial] = useState('01');
-  const [modulo, setModulo] = useState('Faturamento');
+  const [nome, setNome] = useState('');
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleEntrar = async (e) => {
     e.preventDefault();
     setErro('');
 
-    // 1. Rate limit — bloqueia após 5 tentativas
+    // Rate limit — evita spam
     const rl = checkRateLimit();
     if (rl.blocked) {
       setErro(`Muitas tentativas. Aguarde ${rl.remaining}s.`);
       return;
     }
 
-    // 2. Sanitização de input
-    const userSanitized = sanitizeInput(user, 50);
-    const passSanitized = sanitizeInput(pass, 128);
+    // Sanitização
+    const nomeLimpo = sanitizeInput(nome, 50).trim();
 
-    // 3. Validações
-    if (userSanitized.length < 3) {
-      setErro('Usuário deve ter ao menos 3 caracteres.');
-      registerFailedAttempt();
-      return;
-    }
-    if (passSanitized.length < 8) {
-      setErro('Senha deve ter ao menos 8 caracteres.');
+    if (nomeLimpo.length < 2) {
+      setErro('Digite pelo menos 2 caracteres.');
       registerFailedAttempt();
       return;
     }
 
     setCarregando(true);
 
-    // Simula latência de rede
-    setTimeout(() => {
-      // 4. NÃO armazenar a senha. Guarda apenas um token opaco.
-      const authData = {
-        user: userSanitized,
-        filial,
-        modulo,
-        token: generateToken(),   // substitui o "mock-token-123"
-        loginAt: Date.now(),
-      };
-      sessionStorage.setItem('zauth', JSON.stringify(authData));
+    // Registra o acesso (opcional — ver Parte 2)
+    registrarAcesso(nomeLimpo);
 
-      // 5. Limpar rastros de tentativa
-      resetRateLimit();
-      localStorage.removeItem('@mock_emails');
-      sessionStorage.removeItem('@demo_notified');
-      sessionStorage.removeItem('@demo_timer_started');
-      sessionStorage.removeItem('@tour_seen');
+    // Sessão local
+    const authData = {
+      nome: nomeLimpo,
+      token: generateToken(),
+      loginAt: Date.now(),
+    };
+    sessionStorage.setItem('zauth', JSON.stringify(authData));
 
-      setCarregando(false);
-      window.dispatchEvent(new CustomEvent('user-logged-in'));
-      navigate('/dashboard');
-    }, 400);
+    // Limpa rastros de demos anteriores
+    resetRateLimit();
+    localStorage.removeItem('@mock_emails');
+    sessionStorage.removeItem('@demo_notified');
+    sessionStorage.removeItem('@demo_timer_started');
+    sessionStorage.removeItem('@tour_seen');
+
+    setCarregando(false);
+    window.dispatchEvent(new CustomEvent('user-logged-in'));
+    navigate('/dashboard');
+  };
+
+  // Função isolada para facilitar trocar de serviço depois
+  const registrarAcesso = async (nome) => {
+    try {
+      // Substitua pela URL do seu serviço (Formspree, Google Apps Script, etc.)
+      const ENDPOINT = import.meta.env.VITE_ACESSO_ENDPOINT;
+      if (!ENDPOINT) return;
+
+      await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome,
+          quando: new Date().toISOString(),
+          origem: document.referrer || 'direto',
+        }),
+      });
+    } catch {
+      // Falha silenciosa — não bloqueia o login se o serviço cair
+    }
   };
 
   return (
     <div className="login-wrapper">
       <aside className="login-aside">
-        <div className="login-aside-brand">Portal do Analista</div>
+        <div className="login-aside-brand">Protheus Workspace</div>
         <div className="login-aside-content">
           <h2>Sistemas corporativos<br /><em>para o ecossistema Protheus.</em></h2>
           <p>Acesse o ambiente de demonstração e explore relatórios HTML, gerenciamento de chamados e indicadores operacionais.</p>
@@ -87,55 +95,26 @@ export default function Login() {
         <div className="login-card">
           <div className="login-header">
             <h2>Acessar</h2>
-            <p>Entre com suas credenciais para continuar</p>
+            <p>
+              Este é um ambiente de demonstração — não há banco de dados
+              nem credenciais reais. Digite apenas seu nome para entrar e
+              eu saberei que você visitou o projeto.
+            </p>
           </div>
 
-          <form onSubmit={handleLogin} autoComplete="off">
+          <form onSubmit={handleEntrar} autoComplete="off">
             <div className="form-group">
-              <label htmlFor="user">Usuário</label>
+              <label htmlFor="nome">Seu nome</label>
               <input
-                id="user"
+                id="nome"
                 type="text"
-                placeholder="Digite seu usuário"
-                value={user}
-                onChange={e => setUser(e.target.value)}
-                autoComplete="username"
+                placeholder="Ex: João Silva"
+                value={nome}
+                onChange={e => setNome(e.target.value)}
                 maxLength={50}
                 required
+                autoFocus
               />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="pass">Senha</label>
-              <input
-                id="pass"
-                type="password"
-                placeholder="Digite sua senha"
-                value={pass}
-                onChange={e => setPass(e.target.value)}
-                autoComplete="current-password"
-                maxLength={128}
-                required
-              />
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="filial">Filial</label>
-                <select id="filial" value={filial} onChange={e => setFilial(e.target.value)}>
-                  <option value="01">01 - Matriz</option>
-                  <option value="02">02 - Filial SP</option>
-                  <option value="99">99 - Treinamento</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label htmlFor="modulo">Módulo</label>
-                <select id="modulo" value={modulo} onChange={e => setModulo(e.target.value)}>
-                  <option value="Faturamento">Faturamento</option>
-                  <option value="Financeiro">Financeiro</option>
-                  <option value="Estoque">Estoque</option>
-                </select>
-              </div>
             </div>
 
             {erro && (
@@ -145,7 +124,7 @@ export default function Login() {
             )}
 
             <button type="submit" className="btn-primary" disabled={carregando}>
-              {carregando ? 'Autenticando…' : 'Entrar no sistema'}
+              {carregando ? 'Entrando…' : 'Entrar no workspace'}
             </button>
           </form>
         </div>
