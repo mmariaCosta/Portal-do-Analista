@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Apresentacao() {
   const navigate = useNavigate();
+  const anoAtual = new Date().getFullYear();
 
   return (
     <div className="ap-wrap">
@@ -10,11 +11,12 @@ export default function Apresentacao() {
       <nav className="ap-topbar">
         <div className="ap-brand">
           <span className="ap-brand-dot"></span>
-          <span>Portal do Analista</span>
+          <span>Protheus Workspace</span>
         </div>
         <div className="ap-topbar-links">
           <a href="#projeto">Projeto</a>
           <a href="#telas">Telas</a>
+          <a href="#galeria">Galeria</a>
           <a href="#sobre">Autora</a>
         </div>
         <button className="ap-topbar-cta" onClick={() => navigate('/login')}>
@@ -27,7 +29,7 @@ export default function Apresentacao() {
         <div className="ap-hero-meta">
           <span>Portfólio Técnico</span>
           <span className="ap-hero-meta-sep">/</span>
-          <span>2025</span>
+          <span>{anoAtual}</span>
         </div>
         <h1 className="ap-hero-h1">
           Uma demonstração<br />
@@ -67,7 +69,7 @@ export default function Apresentacao() {
         </div>
       </section>
 
-      {/* PROJETO — texto editorial */}
+      {/* PROJETO */}
       <section className="ap-section" id="projeto">
         <div className="ap-sec-label">
           <span>01</span>
@@ -80,7 +82,7 @@ export default function Apresentacao() {
           </h2>
           <div className="ap-section-body">
             <p>
-              Este portal foi idealizado para demonstrar, na prática, o tipo de solução
+              Este workspace foi idealizado para demonstrar, na prática, o tipo de solução
               que desenvolvo no ambiente corporativo. Não é um mockup estático: cada tela
               executa lógica real de estado, navegação e persistência de dados no navegador.
             </p>
@@ -90,6 +92,11 @@ export default function Apresentacao() {
               monitorar indicadores — dentro de uma interface que respeita padrões
               corporativos de usabilidade e design.
             </p>
+            <p>
+              Também faz parte da minha transição para cibersegurança: entender como
+              sistemas corporativos são construídos é a base para saber como protegê-los.
+              O próximo passo é o <strong>SkyGuard</strong>, um SOC simulado em Blue Team.
+            </p>
             <p className="ap-section-note">
               Todos os dados exibidos são fictícios. Nenhuma informação real de empresa
               ou cliente é utilizada.
@@ -98,7 +105,7 @@ export default function Apresentacao() {
         </div>
       </section>
 
-      {/* TELAS — lista numerada, sem cards */}
+      {/* TELAS */}
       <section className="ap-section" id="telas">
         <div className="ap-sec-label">
           <span>02</span>
@@ -177,10 +184,59 @@ export default function Apresentacao() {
         </div>
       </section>
 
+      {/* GALERIA — screenshots reais */}
+      <section className="ap-section" id="galeria">
+        <div className="ap-sec-label">
+          <span>03</span>
+          <span className="ap-sec-line"></span>
+          <span>Galeria</span>
+        </div>
+
+        <div className="ap-gallery">
+
+          <figure className="ap-gallery-item">
+            <img
+              src="/screenshots/login.png"
+              alt="Tela de login com seleção de filial e módulo"
+              loading="lazy"
+            />
+            <figcaption>Autenticação com contexto Protheus</figcaption>
+          </figure>
+
+          <figure className="ap-gallery-item">
+            <img
+              src="/screenshots/dashboard.png"
+              alt="Painel de controle com KPIs dinâmicos"
+              loading="lazy"
+            />
+            <figcaption>Painel com indicadores em tempo real</figcaption>
+          </figure>
+
+          <figure className="ap-gallery-item">
+            <img
+              src="/screenshots/relatorio.png"
+              alt="Relatório HTML com agrupamentos e subtotais"
+              loading="lazy"
+            />
+            <figcaption>Relatório HTML com subtotais e impressão</figcaption>
+          </figure>
+
+          <figure className="ap-gallery-item">
+            <img
+              src="/screenshots/chamados.png"
+              alt="Gestão de chamados de TI por pastas"
+              loading="lazy"
+            />
+            <figcaption>Chamados categorizados por pasta e cor</figcaption>
+          </figure>
+
+        </div>
+      </section>
+
       {/* STACK */}
       <section className="ap-section ap-section-stack">
         <div className="ap-sec-label">
-          <span>03</span>
+          <span>04</span>
           <span className="ap-sec-line"></span>
           <span>Tecnologias</span>
         </div>
@@ -212,7 +268,7 @@ export default function Apresentacao() {
       {/* SOBRE */}
       <section className="ap-section" id="sobre">
         <div className="ap-sec-label">
-          <span>04</span>
+          <span>05</span>
           <span className="ap-sec-line"></span>
           <span>A Autora</span>
         </div>
@@ -222,28 +278,41 @@ export default function Apresentacao() {
             <div className="ap-about-avatar">MC</div>
             <div className="ap-about-meta">
               <span>Disponível para</span>
-              <strong>Projetos & Oportunidades</strong>
+              <strong>Estágio & Oportunidades</strong>
             </div>
           </div>
 
           <div className="ap-about-right">
-            <h2 className="ap-about-name">[Seu Nome Completo]</h2>
-            <p className="ap-about-role">Analista de Sistemas · Desenvolvedora ADVPL</p>
+            <h2 className="ap-about-name">Maria Costa</h2>
+            <p className="ap-about-role">Desenvolvedora ADVPL · Estudante de Cibersegurança</p>
 
             <p className="ap-about-bio">
-              Profissional com atuação no ecossistema TOTVS Protheus. Desenvolvo rotinas
-              customizadas, relatórios HTML, integrações REST e automações que resolvem
-              problemas reais do dia a dia corporativo.
+              Atuo no ecossistema TOTVS Protheus desenvolvendo rotinas customizadas,
+              relatórios HTML, integrações REST e automações que resolvem problemas
+              reais do dia a dia corporativo.
             </p>
             <p className="ap-about-bio">
-              Este projeto foi construído para apresentar, de forma objetiva e visual, as
-              competências técnicas que aplico profissionalmente.
+              Este projeto foi construído para apresentar, de forma objetiva e visual,
+              as competências técnicas que aplico profissionalmente — e serve como base
+              para minha transição para a área de segurança defensiva (Blue Team).
             </p>
 
             <div className="ap-about-contact">
-              <a href="mailto:seuemail@exemplo.com">E-mail</a>
-              <a href="https://www.linkedin.com/in/seu-perfil" target="_blank" rel="noreferrer">LinkedIn</a>
-              <a href="https://github.com/seu-usuario" target="_blank" rel="noreferrer">GitHub</a>
+              <a href="mailto:mmaria.costa@outlook.com">E-mail</a>
+              <a
+                href="https://www.linkedin.com/in/mmariacosta"
+                target="_blank"
+                rel="noreferrer"
+              >
+                LinkedIn
+              </a>
+              <a
+                href="https://github.com/mmariacosta"
+                target="_blank"
+                rel="noreferrer"
+              >
+                GitHub
+              </a>
             </div>
           </div>
         </div>
@@ -255,14 +324,14 @@ export default function Apresentacao() {
           <h2>Explore o sistema em funcionamento.</h2>
           <p>Todas as funcionalidades estão ativas e disponíveis para teste.</p>
           <button className="ap-btn-solid" onClick={() => navigate('/login')}>
-            Acessar o portal
+            Acessar o workspace
           </button>
         </div>
       </section>
 
       {/* RODAPÉ */}
       <footer className="ap-foot">
-        <span>© {new Date().getFullYear()} · Portal do Analista</span>
+        <span>© {anoAtual} · Protheus Workspace</span>
         <span>Projeto de portfólio · Dados fictícios</span>
       </footer>
 
