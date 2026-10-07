@@ -14,11 +14,11 @@ export default function Login() {
   const [carregando, setCarregando] = useState(false);
   const navigate = useNavigate();
 
-  const handleEntrar = async (e) => {
+  const handleEntrar = (e) => {
     e.preventDefault();
     setErro('');
 
-    // Rate limit — evita spam
+    // Rate limit — evita spam de tentativas
     const rl = checkRateLimit();
     if (rl.blocked) {
       setErro(`Muitas tentativas. Aguarde ${rl.remaining}s.`);
@@ -36,10 +36,7 @@ export default function Login() {
 
     setCarregando(true);
 
-    // Registra o acesso (opcional — ver Parte 2)
-    registrarAcesso(nomeLimpo);
-
-    // Sessão local
+    // Sessão local — só o nome, nenhum dado enviado para fora
     const authData = {
       nome: nomeLimpo,
       token: generateToken(),
@@ -59,27 +56,6 @@ export default function Login() {
     navigate('/dashboard');
   };
 
-  // Função isolada para facilitar trocar de serviço depois
-  const registrarAcesso = async (nome) => {
-    try {
-      // Substitua pela URL do seu serviço (Formspree, Google Apps Script, etc.)
-      const ENDPOINT = import.meta.env.VITE_ACESSO_ENDPOINT;
-      if (!ENDPOINT) return;
-
-      await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nome,
-          quando: new Date().toISOString(),
-          origem: document.referrer || 'direto',
-        }),
-      });
-    } catch {
-      // Falha silenciosa — não bloqueia o login se o serviço cair
-    }
-  };
-
   return (
     <div className="login-wrapper">
       <aside className="login-aside">
@@ -97,8 +73,7 @@ export default function Login() {
             <h2>Acessar</h2>
             <p>
               Este é um ambiente de demonstração — não há banco de dados
-              nem credenciais reais. Digite apenas seu nome para entrar e
-              eu saberei que você visitou o projeto.
+              nem credenciais reais. Digite apenas seu nome para entrar.
             </p>
           </div>
 
