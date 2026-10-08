@@ -1,52 +1,77 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import AppHeader from '../components/AppHeader';
 import { escapeHtml } from '../utils/security';
 
 export default function Relatorios() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const authData = JSON.parse(sessionStorage.getItem('zauth')) || {};
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('zauth');
-    navigate('/login');
-  };
-
   const cssBase = `
+    :root, [data-theme="light"] {
+      --bg: #f4f4f6;
+      --surface: #ffffff;
+      --border: rgba(17,17,20,0.1);
+      --text: #111114;
+      --text-muted: #6b6b78;
+      --text-dim: #8a8a96;
+      --accent: #7c3aed;
+      --accent-soft: rgba(124, 58, 237, 0.08);
+      --danger: #dc2626;
+      --warning: #d97706;
+      --ok: #2563eb;
+      --success: #16a34a;
+      --header-bg: rgba(244, 244, 246, 0.85);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: rgba(255,255,255,0.08);
+      --text: #e8e8ea;
+      --text-muted: #9a9aa2;
+      --text-dim: #6b6b74;
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.12);
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --ok: #60a5fa;
+      --success: #4ade80;
+      --header-bg: rgba(13, 13, 13, 0.85);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f4f7; color: #111114; letter-spacing: -0.011em; -webkit-font-smoothing: antialiased; }
-    .topbar { position: sticky; top: 0; z-index: 100; padding: 16px 48px; display: flex; align-items: center; justify-content: space-between; background: rgba(245,244,247,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(17,17,20,0.08); }
-    .topbar-brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #111114; }
-    .topbar-brand::before { content: ""; width: 8px; height: 8px; background: #5b21b6; border-radius: 2px; }
+    body { font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); letter-spacing: -0.011em; -webkit-font-smoothing: antialiased; }
+    .topbar { position: sticky; top: 0; z-index: 100; padding: 16px 48px; display: flex; align-items: center; justify-content: space-between; background: var(--header-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .topbar-brand { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--text); }
+    .topbar-brand::before { content: ""; width: 8px; height: 8px; background: var(--accent); border-radius: 2px; }
     .topbar-actions { display: flex; gap: 8px; }
-    .btn { border: 1px solid rgba(17,17,20,0.15); background: #fff; color: #111114; border-radius: 6px; padding: 9px 16px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; letter-spacing: -0.01em; }
-    .btn:hover { background: #111114; color: #fff; border-color: #111114; }
-    .btn-primary { background: #111114; color: #fff; border-color: #111114; }
-    .btn-primary:hover { background: #2a2a32; }
-    .demo-bar { background: #fffbeb; border-bottom: 1px solid #fcd34d; padding: 10px 48px; font-size: 12px; color: #78350f; display: flex; align-items: center; gap: 10px; }
-    .demo-bar::before { content: ""; width: 6px; height: 6px; background: #d97706; border-radius: 50%; }
+    .btn { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 6px; padding: 9px 16px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; letter-spacing: -0.01em; }
+    .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { filter: brightness(0.9); }
+    .demo-bar { background: rgba(217, 119, 6, 0.1); border-bottom: 1px solid var(--warning); padding: 10px 48px; font-size: 12px; color: var(--warning); display: flex; align-items: center; gap: 10px; }
+    .demo-bar::before { content: ""; width: 6px; height: 6px; background: var(--warning); border-radius: 50%; }
     .demo-bar strong { font-weight: 600; }
     .wrap { max-width: 1400px; margin: 0 auto; padding: 56px 48px 80px; }
-    .doc-head { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid rgba(17,17,20,0.1); }
-    .doc-meta { font-size: 11px; font-weight: 500; color: #6b6b78; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; }
-    .doc-meta .dot { width: 3px; height: 3px; background: #c5c2cf; border-radius: 50%; }
-    .doc-title { font-size: 38px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.08; color: #111114; margin-bottom: 14px; }
-    .doc-title em { font-style: italic; color: #5b21b6; font-weight: 400; }
-    .doc-desc { font-size: 15px; color: #6b6b78; line-height: 1.6; max-width: 720px; }
-    .params { display: grid; grid-template-columns: repeat(6, 1fr); border-top: 1px solid rgba(17,17,20,0.1); border-bottom: 1px solid rgba(17,17,20,0.1); margin-bottom: 56px; }
-    .param { padding: 24px 20px 20px; border-right: 1px solid rgba(17,17,20,0.1); }
+    .doc-head { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+    .doc-meta { font-size: 11px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; }
+    .doc-meta .dot { width: 3px; height: 3px; background: var(--text-dim); border-radius: 50%; }
+    .doc-title { font-size: 38px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.08; color: var(--text); margin-bottom: 14px; }
+    .doc-title em { font-style: italic; color: var(--accent); font-weight: 400; }
+    .doc-desc { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 720px; }
+    .params { display: grid; grid-template-columns: repeat(6, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 56px; }
+    .param { padding: 24px 20px 20px; border-right: 1px solid var(--border); }
     .param:last-child { border-right: none; }
-    .param .lbl { font-size: 10px; font-weight: 500; color: #8a8a96; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; }
-    .param .val { font-size: 22px; font-weight: 500; color: #111114; letter-spacing: -0.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
-    .param .val small { display: block; font-size: 11px; color: #6b6b78; font-weight: 400; letter-spacing: 0; margin-top: 4px; }
-    .param .val.accent { color: #5b21b6; }
-    .param .val.danger { color: #dc2626; }
-    .param .val.warn { color: #d97706; }
-    .param .val.ok { color: #2563eb; }
-    .sec-label { font-size: 11px; font-weight: 500; color: #8a8a96; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
-    .sec-label::after { content: ""; flex: 1; height: 1px; background: rgba(17,17,20,0.1); }
-    .foot { margin-top: 64px; padding-top: 24px; border-top: 1px solid rgba(17,17,20,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 11px; color: #8a8a96; letter-spacing: 0.08em; }
-    .foot strong { color: #6b6b78; font-weight: 500; }
-    @media print { body { background: #fff; } .topbar, .demo-bar { display: none; } .wrap { padding: 0; max-width: 100%; } .group, .card { page-break-inside: avoid; } @page { size: A4 landscape; margin: 1.2cm; } }
+    .param .lbl { font-size: 10px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px; }
+    .param .val { font-size: 22px; font-weight: 500; color: var(--text); letter-spacing: -0.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .param .val small { display: block; font-size: 11px; color: var(--text-muted); font-weight: 400; letter-spacing: 0; margin-top: 4px; }
+    .param .val.accent { color: var(--accent); }
+    .param .val.danger { color: var(--danger); }
+    .param .val.warn { color: var(--warning); }
+    .param .val.ok { color: var(--ok); }
+    .sec-label { font-size: 11px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .foot { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; }
+    .foot strong { color: var(--text-muted); font-weight: 500; }
+    @media print { body { background: #fff; color: #111; } .topbar, .demo-bar { display: none; } .wrap { padding: 0; max-width: 100%; } .group, .card { page-break-inside: avoid; } @page { size: A4 landscape; margin: 1.2cm; } }
   `;
 
   const scriptExportar = `
@@ -75,11 +100,13 @@ export default function Relatorios() {
   `;
 
   const openReport = (title, cssExtra, body) => {
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+    const temaAtual = document.documentElement.getAttribute('data-theme') || 'light';
+
+    const html = `<!DOCTYPE html><html data-theme="${temaAtual}"><head><meta charset="UTF-8"><title>${title}</title>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
       <style>${cssBase}${cssExtra}</style></head><body>
       <div class="topbar">
-        <div class="topbar-brand">Portal do Analista</div>
+        <div class="topbar-brand">Protheus Workspace</div>
         <div class="topbar-actions">
           <button class="btn" onclick="window.print()">Imprimir</button>
           <button class="btn btn-primary" onclick="exportarCSV()">Exportar CSV</button>
@@ -96,13 +123,10 @@ export default function Relatorios() {
 
   const fmt = (n) => n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  // ============================================================
-  // 1) TÍTULOS A RECEBER
-  // ============================================================
   const gerarRelatorioTitulos = () => {
     const dataBase = new Date().toLocaleDateString('pt-BR');
     const horaBase = new Date().toLocaleTimeString('pt-BR');
-    const usuario = escapeHtml(authData.user || 'Visitante');
+    const usuario = escapeHtml(authData.nome || 'Visitante');
 
     const grupos = [
       { chave: 'DEMO-001/X', nome: 'EMPRESA FICTÍCIA ALFA', cidade: 'CIDADE DEMO', uf: 'XX',
@@ -131,29 +155,29 @@ export default function Relatorios() {
     }));
 
     const cssExtra = `
-      .client { background: #fff; border: 1px solid rgba(17,17,20,0.08); border-radius: 12px; margin-bottom: 24px; overflow: hidden; page-break-inside: avoid; }
-      .client-head { padding: 24px 28px; border-bottom: 1px solid rgba(17,17,20,0.06); display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
-      .client-id h3 { font-size: 17px; font-weight: 500; letter-spacing: -0.02em; color: #111114; margin-bottom: 4px; }
-      .client-id p { font-size: 12px; color: #6b6b78; }
+      .client { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; overflow: hidden; page-break-inside: avoid; }
+      .client-head { padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+      .client-id h3 { font-size: 17px; font-weight: 500; letter-spacing: -0.02em; color: var(--text); margin-bottom: 4px; }
+      .client-id p { font-size: 12px; color: var(--text-muted); }
       .client-stat { display: flex; gap: 32px; }
       .client-stat div { text-align: right; }
-      .client-stat .lbl { font-size: 10px; color: #8a8a96; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px; font-weight: 500; }
-      .client-stat .val { font-size: 18px; font-weight: 500; color: #111114; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+      .client-stat .lbl { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px; font-weight: 500; }
+      .client-stat .val { font-size: 18px; font-weight: 500; color: var(--text); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
       .client-body { padding: 20px 28px 24px; }
       .client-body table { width: 100%; border-collapse: collapse; font-size: 13px; }
-      .client-body thead th { text-align: left; padding: 8px 10px; font-size: 10px; color: #8a8a96; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid rgba(17,17,20,0.15); }
-      .client-body tbody td { padding: 12px 10px; border-bottom: 1px solid rgba(17,17,20,0.05); color: #111114; }
+      .client-body thead th { text-align: left; padding: 8px 10px; font-size: 10px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--border); }
+      .client-body tbody td { padding: 12px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
       .client-body tbody tr:last-child td { border-bottom: none; }
-      .client-body .mono { font-family: "Consolas", monospace; font-size: 12px; color: #4a4a52; }
-      .client-body .muted { color: #8a8a96; font-size: 12px; }
+      .client-body .mono { font-family: "Consolas", monospace; font-size: 12px; color: var(--text-muted); }
+      .client-body .muted { color: var(--text-dim); font-size: 12px; }
       .client-body .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
       .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
       .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; }
-      .status.vencido::before { background: #dc2626; }
-      .status.avencer::before { background: #d97706; }
-      .status.hoje::before { background: #2563eb; }
-      .grand-total { margin-top: 24px; padding: 24px 32px; background: #111114; color: #fff; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-      .grand-total .lbl { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.55; }
+      .status.vencido::before { background: var(--danger); }
+      .status.avencer::before { background: var(--warning); }
+      .status.hoje::before { background: var(--ok); }
+      .grand-total { margin-top: 24px; padding: 24px 32px; background: var(--accent); color: #fff; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+      .grand-total .lbl { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; }
       .grand-total .val { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; }
     `;
 
@@ -216,7 +240,7 @@ export default function Relatorios() {
         <div class="val">R$ ${fmt(soma)}</div>
       </div>
       <div class="foot">
-        <span><strong>U_DEMO_REL</strong> · Portal do Analista · Documento técnico</span>
+        <span><strong>U_DEMO_REL</strong> · Protheus Workspace · Documento técnico</span>
         <span>Emitido em ${dataBase} às ${horaBase} por ${usuario}</span>
       </div>
     `;
@@ -224,13 +248,10 @@ export default function Relatorios() {
     openReport('U_DEMO_REL — Títulos a Receber', cssExtra, body);
   };
 
-  // ============================================================
-  // 2) PERFORMANCE DE VENDAS
-  // ============================================================
   const gerarRelatorioVendas = () => {
     const dataBase = new Date().toLocaleDateString('pt-BR');
     const horaBase = new Date().toLocaleTimeString('pt-BR');
-    const usuario = authData.user || 'Visitante';
+    const usuario = authData.nome || 'Visitante';
 
     const vendedores = [
       { pos: 1, nome: 'VENDEDOR FICTÍCIO ALFA', cod: 'DEMO-001', regiao: 'SUDESTE', meta: 50000, realizado: 62000, pedidos: 42 },
@@ -246,23 +267,23 @@ export default function Relatorios() {
 
     const cssExtra = `
       .ranking { display: flex; flex-direction: column; gap: 12px; }
-      .rank-row { background: #fff; border: 1px solid rgba(17,17,20,0.08); border-radius: 12px; padding: 22px 28px; display: grid; grid-template-columns: 60px 1fr 260px 320px; gap: 24px; align-items: center; page-break-inside: avoid; }
-      .rank-pos { font-size: 32px; font-weight: 500; color: #111114; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; line-height: 1; }
-      .rank-pos.top1 { color: #5b21b6; }
-      .rank-pos.top2 { color: #6b6b78; }
-      .rank-pos.top3 { color: #d97706; }
-      .rank-name h3 { font-size: 16px; font-weight: 500; color: #111114; margin-bottom: 4px; letter-spacing: -0.02em; }
-      .rank-name p { font-size: 12px; color: #6b6b78; }
+      .rank-row { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 28px; display: grid; grid-template-columns: 60px 1fr 260px 320px; gap: 24px; align-items: center; page-break-inside: avoid; }
+      .rank-pos { font-size: 32px; font-weight: 500; color: var(--text); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+      .rank-pos.top1 { color: var(--accent); }
+      .rank-pos.top2 { color: var(--text-muted); }
+      .rank-pos.top3 { color: var(--warning); }
+      .rank-name h3 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 4px; letter-spacing: -0.02em; }
+      .rank-name p { font-size: 12px; color: var(--text-muted); }
       .bar-wrap { display: flex; flex-direction: column; gap: 6px; }
-      .bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: #8a8a96; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
-      .bar-track { height: 6px; background: #efedf3; border-radius: 3px; overflow: hidden; }
-      .bar-fill { height: 100%; background: #5b21b6; border-radius: 3px; }
-      .bar-fill.warn { background: #d97706; }
-      .bar-fill.ok { background: #16a34a; }
+      .bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+      .bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+      .bar-fill { height: 100%; background: var(--accent); border-radius: 3px; }
+      .bar-fill.warn { background: var(--warning); }
+      .bar-fill.ok { background: var(--success); }
       .rank-metrics { display: flex; gap: 24px; justify-content: flex-end; }
       .rank-metric { text-align: right; }
-      .rank-metric .lbl { font-size: 10px; color: #8a8a96; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
-      .rank-metric .val { font-size: 14px; font-weight: 500; color: #111114; font-variant-numeric: tabular-nums; }
+      .rank-metric .lbl { font-size: 10px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
+      .rank-metric .val { font-size: 14px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
     `;
 
     let body = `
@@ -309,7 +330,7 @@ export default function Relatorios() {
 
     body += `</div>
       <div class="foot">
-        <span><strong>U_DEMO_VEND</strong> · Portal do Analista · Documento técnico</span>
+        <span><strong>U_DEMO_VEND</strong> · Protheus Workspace · Documento técnico</span>
         <span>Emitido em ${dataBase} às ${horaBase} por ${usuario}</span>
       </div>
     `;
@@ -317,13 +338,10 @@ export default function Relatorios() {
     openReport('U_DEMO_VEND — Performance de Vendas', cssExtra, body);
   };
 
-  // ============================================================
-  // 3) POSIÇÃO DE ESTOQUE
-  // ============================================================
   const gerarRelatorioEstoque = () => {
     const dataBase = new Date().toLocaleDateString('pt-BR');
     const horaBase = new Date().toLocaleTimeString('pt-BR');
-    const usuario = authData.user || 'Visitante';
+    const usuario = authData.nome || 'Visitante';
 
     const armazens = [
       { cod: '01', nome: 'ARMAZÉM DEMO CENTRAL', cidade: 'CIDADE DEMO',
@@ -346,33 +364,33 @@ export default function Relatorios() {
     }));
 
     const cssExtra = `
-      .warehouse { background: #fff; border: 1px solid rgba(17,17,20,0.08); border-radius: 12px; margin-bottom: 24px; overflow: hidden; page-break-inside: avoid; }
-      .wh-head { padding: 22px 28px; border-bottom: 1px solid rgba(17,17,20,0.06); display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
-      .wh-id h3 { font-size: 16px; font-weight: 500; color: #111114; margin-bottom: 4px; letter-spacing: -0.02em; }
-      .wh-id p { font-size: 12px; color: #6b6b78; }
-      .wh-id p code { font-family: "Consolas", monospace; color: #5b21b6; background: #ede9fe; padding: 2px 6px; border-radius: 3px; font-size: 11px; }
+      .warehouse { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; overflow: hidden; page-break-inside: avoid; }
+      .wh-head { padding: 22px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+      .wh-id h3 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 4px; letter-spacing: -0.02em; }
+      .wh-id p { font-size: 12px; color: var(--text-muted); }
+      .wh-id p code { font-family: "Consolas", monospace; color: var(--accent); background: var(--accent-soft); padding: 2px 6px; border-radius: 3px; font-size: 11px; }
       .wh-stat { display: flex; gap: 28px; }
-      .wh-stat .lbl { font-size: 10px; color: #8a8a96; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
-      .wh-stat .val { font-size: 16px; font-weight: 500; color: #111114; font-variant-numeric: tabular-nums; }
+      .wh-stat .lbl { font-size: 10px; color: var(--text-dim); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
+      .wh-stat .val { font-size: 16px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
       .prod-list { padding: 8px 28px 20px; }
-      .prod-row { display: grid; grid-template-columns: 1.6fr 1fr 220px 140px; gap: 24px; padding: 20px 0; border-bottom: 1px solid rgba(17,17,20,0.05); align-items: center; }
+      .prod-row { display: grid; grid-template-columns: 1.6fr 1fr 220px 140px; gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--border); align-items: center; }
       .prod-row:last-child { border-bottom: none; }
-      .prod-id h4 { font-size: 14px; font-weight: 500; color: #111114; margin-bottom: 3px; }
-      .prod-id p { font-size: 11px; color: #8a8a96; font-family: "Consolas", monospace; }
-      .prod-info { font-size: 12px; color: #6b6b78; }
-      .prod-info strong { color: #111114; font-weight: 500; }
+      .prod-id h4 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+      .prod-id p { font-size: 11px; color: var(--text-dim); font-family: "Consolas", monospace; }
+      .prod-info { font-size: 12px; color: var(--text-muted); }
+      .prod-info strong { color: var(--text); font-weight: 500; }
       .level-bar { display: flex; flex-direction: column; gap: 6px; }
-      .level-labels { display: flex; justify-content: space-between; font-size: 10px; color: #8a8a96; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
-      .level-track { height: 8px; background: #efedf3; border-radius: 4px; overflow: hidden; position: relative; }
-      .level-min { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: #dc2626; }
+      .level-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+      .level-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; position: relative; }
+      .level-min { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--danger); }
       .level-fill { height: 100%; border-radius: 4px; }
-      .level-fill.ok { background: #16a34a; }
-      .level-fill.warn { background: #d97706; }
-      .level-fill.critical { background: #dc2626; }
+      .level-fill.ok { background: var(--success); }
+      .level-fill.warn { background: var(--warning); }
+      .level-fill.critical { background: var(--danger); }
       .prod-valor { text-align: right; font-variant-numeric: tabular-nums; }
-      .prod-valor .val { font-size: 14px; font-weight: 500; color: #111114; }
-      .prod-valor .lbl { font-size: 10px; color: #8a8a96; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
-      .badge-critico { display: inline-block; font-size: 10px; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 8px; margin-left: 6px; font-weight: 600; letter-spacing: 0.06em; }
+      .prod-valor .val { font-size: 14px; font-weight: 500; color: var(--text); }
+      .prod-valor .lbl { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+      .badge-critico { display: inline-block; font-size: 10px; color: var(--danger); background: rgba(220, 38, 38, 0.1); padding: 2px 8px; border-radius: 8px; margin-left: 6px; font-weight: 600; letter-spacing: 0.06em; }
     `;
 
     let body = `
@@ -439,7 +457,7 @@ export default function Relatorios() {
 
     body += `
       <div class="foot">
-        <span><strong>U_DEMO_ESTQ</strong> · Portal do Analista · Documento técnico</span>
+        <span><strong>U_DEMO_ESTQ</strong> · Protheus Workspace · Documento técnico</span>
         <span>Emitido em ${dataBase} às ${horaBase} por ${usuario}</span>
       </div>
     `;
@@ -447,13 +465,10 @@ export default function Relatorios() {
     openReport('U_DEMO_ESTQ — Posição de Estoque', cssExtra, body);
   };
 
-  // ============================================================
-  // 4) CADASTRO DE CLIENTES
-  // ============================================================
   const gerarRelatorioClientes = () => {
     const dataBase = new Date().toLocaleDateString('pt-BR');
     const horaBase = new Date().toLocaleTimeString('pt-BR');
-    const usuario = authData.user || 'Visitante';
+    const usuario = authData.nome || 'Visitante';
 
     const clientes = [
       { cod: 'DEMO-001', loja: 'X', nome: 'EMPRESA FICTÍCIA ALFA', cnpj: '00.000.000/0001-00', uf: 'XX', cidade: 'CIDADE DEMO', contato: 'contato.alfa@demo.com', fone: '(00) 0000-0000', status: 'ativo', desde: '01/01/2020' },
@@ -473,26 +488,26 @@ export default function Relatorios() {
 
     const cssExtra = `
       .uf-index { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
-      .uf-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fff; border: 1px solid rgba(17,17,20,0.08); border-radius: 20px; font-size: 12px; }
-      .uf-chip strong { color: #5b21b6; font-weight: 600; font-family: "Consolas", monospace; letter-spacing: 0.04em; }
-      .uf-chip span { color: #6b6b78; }
+      .uf-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; }
+      .uf-chip strong { color: var(--accent); font-weight: 600; font-family: "Consolas", monospace; letter-spacing: 0.04em; }
+      .uf-chip span { color: var(--text-muted); }
       .clients-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-      .client-card { background: #fff; border: 1px solid rgba(17,17,20,0.08); border-radius: 12px; padding: 22px 24px; page-break-inside: avoid; }
+      .client-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; page-break-inside: avoid; }
       .cc-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; }
-      .cc-code { font-family: "Consolas", monospace; font-size: 11px; color: #5b21b6; background: #ede9fe; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.04em; }
+      .cc-code { font-family: "Consolas", monospace; font-size: 11px; color: var(--accent); background: var(--accent-soft); padding: 3px 8px; border-radius: 4px; letter-spacing: 0.04em; }
       .cc-status { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; }
       .cc-status::before { content: ""; width: 5px; height: 5px; border-radius: 50%; }
-      .cc-status.ativo { color: #16a34a; }
-      .cc-status.ativo::before { background: #16a34a; }
-      .cc-status.inativo { color: #6b6b78; }
-      .cc-status.inativo::before { background: #6b6b78; }
-      .cc-status.bloqueado { color: #dc2626; }
-      .cc-status.bloqueado::before { background: #dc2626; }
-      .cc-name { font-size: 15px; font-weight: 500; color: #111114; letter-spacing: -0.015em; margin-bottom: 4px; line-height: 1.3; }
-      .cc-cnpj { font-size: 11px; color: #8a8a96; font-family: "Consolas", monospace; margin-bottom: 16px; }
-      .cc-data { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding-top: 14px; border-top: 1px solid rgba(17,17,20,0.06); }
-      .cc-data .lbl { font-size: 9px; color: #8a8a96; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; margin-bottom: 3px; }
-      .cc-data .val { font-size: 12px; color: #111114; word-break: break-all; }
+      .cc-status.ativo { color: var(--success); }
+      .cc-status.ativo::before { background: var(--success); }
+      .cc-status.inativo { color: var(--text-muted); }
+      .cc-status.inativo::before { background: var(--text-muted); }
+      .cc-status.bloqueado { color: var(--danger); }
+      .cc-status.bloqueado::before { background: var(--danger); }
+      .cc-name { font-size: 15px; font-weight: 500; color: var(--text); letter-spacing: -0.015em; margin-bottom: 4px; line-height: 1.3; }
+      .cc-cnpj { font-size: 11px; color: var(--text-dim); font-family: "Consolas", monospace; margin-bottom: 16px; }
+      .cc-data { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+      .cc-data .lbl { font-size: 9px; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; margin-bottom: 3px; }
+      .cc-data .val { font-size: 12px; color: var(--text); word-break: break-all; }
       @media print { .clients-grid { grid-template-columns: 1fr 1fr; } }
     `;
 
@@ -538,7 +553,7 @@ export default function Relatorios() {
       </div>
 
       <div class="foot">
-        <span><strong>U_DEMO_CLI</strong> · Portal do Analista · Documento técnico</span>
+        <span><strong>U_DEMO_CLI</strong> · Protheus Workspace · Documento técnico</span>
         <span>Emitido em ${dataBase} às ${horaBase} por ${usuario}</span>
       </div>
     `;
@@ -546,9 +561,6 @@ export default function Relatorios() {
     openReport('U_DEMO_CLI — Cadastro de Clientes', cssExtra, body);
   };
 
-  // ============================================================
-  // LISTA DE RELATÓRIOS
-  // ============================================================
   const relatorios = [
     { id: 1, nome: 'Relatório de Títulos a Receber', rotina: 'U_DEMO_REL', desc: 'Cards por cliente com subtotais, status de vencimento e classificação por dias em atraso.', gerar: gerarRelatorioTitulos },
     { id: 2, nome: 'Performance de Vendas', rotina: 'U_DEMO_VEND', desc: 'Ranking de vendedores com barras de progresso, meta vs. realizado e percentual de atingimento.', gerar: gerarRelatorioVendas },
@@ -558,24 +570,7 @@ export default function Relatorios() {
 
   return (
     <div className="app-container">
-      <header className="header">
-        <div className="header-logo" data-tour="header-logo">Portal do Analista</div>
-        <nav className="header-nav" data-tour="header-nav">
-          <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>Início</Link>
-          <Link to="/relatorios" className={location.pathname === '/relatorios' ? 'active' : ''}>Relatórios</Link>
-          <Link to="/tickets" className={location.pathname === '/tickets' ? 'active' : ''}>Chamados</Link>
-          <Link to="/codigo" className={location.pathname === '/codigo' ? 'active' : ''}>Código</Link>
-          <Link to="/cadastros" className={location.pathname === '/cadastros' ? 'active' : ''}>Cadastros</Link>
-          <Link to="/configuracoes" className={location.pathname.startsWith('/configuracoes') ? 'active' : ''}>Configurações</Link>
-        </nav>
-        <div className="header-user" data-tour="user-info">
-          <div className="user-info">
-            <strong>{authData.user || 'Usuário'}</strong>
-            <span>Filial {authData.filial || '01'} · {authData.modulo || 'Geral'}</span>
-          </div>
-          <button onClick={handleLogout} className="btn-logout">Sair</button>
-        </div>
-      </header>
+      <AppHeader user={authData} />
 
       <main className="rel-wrap" data-tour="rel-wrap">
         <div className="rel-head">

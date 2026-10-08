@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import AppHeader from '../components/AppHeader';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const location = useLocation();
   const authData = JSON.parse(sessionStorage.getItem('zauth')) || {};
 
   const [stats, setStats] = useState({
@@ -41,11 +41,6 @@ export default function Dashboard() {
     });
   }, []);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('zauth');
-    navigate('/login');
-  };
-
   const getCorCategoria = (cat) => {
     switch (cat) {
       case 'Urgente': return '#dc2626';
@@ -62,31 +57,14 @@ export default function Dashboard() {
 
   return (
     <div className="app-container">
-      <header className="header">
-        <div className="header-logo" data-tour="header-logo">Portal do Analista</div>
-        <nav className="header-nav" data-tour="header-nav">
-          <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>Início</Link>
-          <Link to="/relatorios" className={location.pathname === '/relatorios' ? 'active' : ''}>Relatórios</Link>
-          <Link to="/tickets" className={location.pathname === '/tickets' ? 'active' : ''}>Chamados</Link>
-          <Link to="/codigo" className={location.pathname === '/codigo' ? 'active' : ''}>Código</Link>
-          <Link to="/cadastros" className={location.pathname === '/cadastros' ? 'active' : ''}>Cadastros</Link>
-          <Link to="/configuracoes" className={location.pathname.startsWith('/configuracoes') ? 'active' : ''}>Configurações</Link>
-        </nav>
-        <div className="header-user" data-tour="user-info">
-          <div className="user-info">
-            <strong>{authData.user || 'Usuário'}</strong>
-            <span>Filial {authData.filial || '01'} · {authData.modulo || 'Geral'}</span>
-          </div>
-          <button onClick={handleLogout} className="btn-logout">Sair</button>
-        </div>
-      </header>
+      <AppHeader user={authData} />
 
       <main className="dash-wrap">
         <div className="dash-head">
           <div className="dash-eyebrow">{hoje}</div>
           <h1 className="dash-title">
-            Bem-vinda de volta,<br />
-            <em>{authData.user || 'analista'}.</em>
+            Bem-vindo de volta,<br />
+            <em>{authData.nome || 'visitante'}.</em>
           </h1>
           <p className="dash-subtitle">
             Visão consolidada do sistema. Os números abaixo são atualizados
@@ -113,7 +91,7 @@ export default function Dashboard() {
           <div className="dash-kpi">
             <div className="dash-kpi-label">Ambiente</div>
             <div className="dash-kpi-value" style={{ fontSize: '1.6rem', paddingTop: '10px' }}>
-              {authData.filial || '01'}–{authData.modulo || 'Geral'}
+              Demo
             </div>
             <div className="dash-kpi-note">Conexão ativa</div>
           </div>

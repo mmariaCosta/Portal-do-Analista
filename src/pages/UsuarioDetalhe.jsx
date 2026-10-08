@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import AppHeader from '../components/AppHeader';
 import { usuariosIniciais } from './Configuracoes';
 import { sanitizeInput, isValidEmail, isValidPassword } from '../utils/security';
 
-
 export default function UsuarioDetalhe() {
   const navigate = useNavigate();
-  const location = useLocation();
   const params = useParams();
   const authData = JSON.parse(sessionStorage.getItem('zauth')) || {};
 
@@ -29,7 +28,6 @@ export default function UsuarioDetalhe() {
     const usuarios = saved ? JSON.parse(saved) : usuariosIniciais;
 
     if (isNovo) {
-      // Gera próximo código disponível
       const nums = usuarios
         .map(u => parseInt(String(u.codigo).replace('USR', ''), 10))
         .filter(n => !isNaN(n));
@@ -61,12 +59,6 @@ export default function UsuarioDetalhe() {
     });
     setOriginal(u);
   }, [id, mode]);
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('zauth');
-    navigate('/login');
-  };
-
 
   const handleChange = (campo, valor) => {
     let v = valor;
@@ -140,22 +132,7 @@ export default function UsuarioDetalhe() {
 
   return (
     <div className="app-container">
-      <header className="header">
-        <div className="header-logo">Portal do Analista</div>
-        <nav className="header-nav">
-          <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>Início</Link>
-          <Link to="/relatorios" className={location.pathname === '/relatorios' ? 'active' : ''}>Relatórios</Link>
-          <Link to="/tickets" className={location.pathname === '/tickets' ? 'active' : ''}>Chamados</Link>
-          <Link to="/configuracoes" className={location.pathname.startsWith('/configuracoes') ? 'active' : ''}>Configurações</Link>
-        </nav>
-        <div className="header-user">
-          <div className="user-info">
-            <strong>{authData.user || 'Usuário'}</strong>
-            <span>Filial {authData.filial || '01'} · {authData.modulo || 'Geral'}</span>
-          </div>
-          <button onClick={handleLogout} className="btn-logout">Sair</button>
-        </div>
-      </header>
+      <AppHeader user={authData} />
 
       <main className="usr-wrap">
         <button className="usr-back" onClick={() => navigate('/configuracoes')}>

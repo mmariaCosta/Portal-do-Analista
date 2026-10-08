@@ -37,8 +37,15 @@ const emailsFallback = [
 // ============================================================
 const PrivateRoute = ({ children }) => {
   const auth = sessionStorage.getItem('zauth');
-  return auth ? children : <Navigate to="/login" />;
+  return auth ? children : <Navigate to="/login" replace />;
 };
+
+// ============================================================
+// PÁGINA 404
+// ============================================================
+function NotFound() {
+  return <Navigate to="/" replace />;
+}
 
 // ============================================================
 // HOOK — Força HTTPS fora de localhost (produção)
@@ -64,6 +71,12 @@ function useHttpsEnforce() {
 function useSessionTimeout() {
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
+  const navigateRef = useRef(navigate);
+
+  // Mantém a referência atualizada sem re-rodar o efeito
+  useEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate]);
 
   useEffect(() => {
     const resetTimer = () => {
@@ -76,7 +89,7 @@ function useSessionTimeout() {
         sessionStorage.removeItem('@demo_timer_started');
         sessionStorage.removeItem('@tour_seen');
         alert('Sessão expirada por inatividade. Faça login novamente.');
-        navigate('/login');
+        navigateRef.current('/login');
       }, SESSION_IDLE_MS);
     };
 
@@ -88,7 +101,7 @@ function useSessionTimeout() {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       events.forEach(ev => window.removeEventListener(ev, resetTimer));
     };
-  }, [navigate]);
+  }, []); // ← array vazio agora
 }
 
 // ============================================================
@@ -220,8 +233,11 @@ function AppInner() {
   return (
     <>
       <Routes>
+        {/* Rotas públicas */}
         <Route path="/" element={<Apresentacao />} />
         <Route path="/login" element={<Login />} />
+
+        {/* Rotas privadas */}
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/relatorios" element={<PrivateRoute><Relatorios /></PrivateRoute>} />
         <Route path="/tickets" element={<PrivateRoute><Tickets /></PrivateRoute>} />
@@ -229,6 +245,9 @@ function AppInner() {
         <Route path="/cadastros" element={<PrivateRoute><Cadastros /></PrivateRoute>} />
         <Route path="/configuracoes" element={<PrivateRoute><Configuracoes /></PrivateRoute>} />
         <Route path="/configuracoes/usuario/:id/:mode" element={<PrivateRoute><UsuarioDetalhe /></PrivateRoute>} />
+
+        {/* Fallback — qualquer rota inexistente volta para a Apresentação */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       <DemoNotifier

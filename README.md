@@ -1,4 +1,4 @@
-# 🎯 Portal do Analista
+# 🎯 Protheus Workspace
 
 > Um projeto de estudo que virou portfólio: simulando o dia a dia de um analista no ecossistema TOTVS Protheus com relatórios HTML-ADVPL, chamados de TI e painel de indicadores.
 

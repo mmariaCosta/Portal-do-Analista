@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import AppHeader from '../components/AppHeader';
 
-// ============================================================
-// Realça uma linha de código com spans coloridos
-// ============================================================
 function highlightLine(line, lang) {
   let html = line
     .replace(/&/g, '&amp;')
@@ -42,9 +39,6 @@ function highlightLine(line, lang) {
   return html + commentSuffix;
 }
 
-// ============================================================
-// Bloco de código estilo editor
-// ============================================================
 function CodeBlock({ filename, language, code }) {
   const lines = code.trim().split('\n');
   return (
@@ -79,21 +73,10 @@ function CodeBlock({ filename, language, code }) {
   );
 }
 
-// ============================================================
-// Página principal
-// ============================================================
 export default function Codigo() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const authData = JSON.parse(sessionStorage.getItem('zauth')) || {};
   const [tab, setTab] = useState('sql');
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('zauth');
-    navigate('/login');
-  };
-
-  // ---------- SQL ----------
   const codeSql = `
 -- Lista clientes ativos da filial com a região
 -- Objetivo: alimentar o painel inicial do portal
@@ -112,7 +95,6 @@ WHERE T.D_E_L_E_T_ = ''
 ORDER BY T.A1_COD
   `;
 
-  // ---------- ADVPL ----------
   const codeAdvpl = `
 /*/{Protheus.doc} ListaClientes
     Retorna clientes da filial em formato JSON
@@ -150,24 +132,7 @@ Return oJson:ToJson()
 
   return (
     <div className="app-container">
-      <header className="header">
-        <div className="header-logo" data-tour="header-logo">Portal do Analista</div>
-        <nav className="header-nav" data-tour="header-nav">
-          <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>Início</Link>
-          <Link to="/relatorios" className={location.pathname === '/relatorios' ? 'active' : ''}>Relatórios</Link>
-          <Link to="/tickets" className={location.pathname === '/tickets' ? 'active' : ''}>Chamados</Link>
-          <Link to="/codigo" className={location.pathname === '/codigo' ? 'active' : ''}>Código</Link>
-          <Link to="/cadastros" className={location.pathname === '/cadastros' ? 'active' : ''}>Cadastros</Link>
-          <Link to="/configuracoes" className={location.pathname.startsWith('/configuracoes') ? 'active' : ''}>Configurações</Link>
-        </nav>
-        <div className="header-user" data-tour="user-info">
-          <div className="user-info">
-            <strong>{authData.user || 'Usuário'}</strong>
-            <span>Filial {authData.filial || '01'} · {authData.modulo || 'Geral'}</span>
-          </div>
-          <button onClick={handleLogout} className="btn-logout">Sair</button>
-        </div>
-      </header>
+      <AppHeader user={authData} />
 
       <main className="dev-wrap">
         <div className="dev-head">

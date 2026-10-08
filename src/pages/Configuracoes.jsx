@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import AppHeader from '../components/AppHeader';
 
 export const usuariosIniciais = [
   { id: 1, codigo: 'USR001', nome: 'Ana Paula Silva',   email: 'ana.silva@empresa.com',    senha: '12345678',  cargo: 'Analista de Sistemas',      setor: 'TI',          status: 'ativo',     dataFimAcesso: '2026-12-31' },
@@ -11,7 +12,6 @@ export const usuariosIniciais = [
 
 export default function Configuracoes() {
   const navigate = useNavigate();
-  const location = useLocation();
   const authData = JSON.parse(sessionStorage.getItem('zauth')) || {};
 
   const [usuarios, setUsuarios] = useState([]);
@@ -27,12 +27,7 @@ export default function Configuracoes() {
       localStorage.setItem('@mock_users', JSON.stringify(usuariosIniciais));
     }
     setSelecionado(null);
-  }, [location.pathname]);
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('zauth');
-    navigate('/login');
-  };
+  }, []);
 
   const irParaAcao = (acao) => {
     if (!selecionado) {
@@ -45,24 +40,7 @@ export default function Configuracoes() {
 
   return (
     <div className="app-container">
-      <header className="header">
-        <div className="header-logo" data-tour="header-logo">Portal do Analista</div>
-        <nav className="header-nav" data-tour="header-nav">
-          <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>Início</Link>
-          <Link to="/relatorios" className={location.pathname === '/relatorios' ? 'active' : ''}>Relatórios</Link>
-          <Link to="/tickets" className={location.pathname === '/tickets' ? 'active' : ''}>Chamados</Link>
-          <Link to="/codigo" className={location.pathname === '/codigo' ? 'active' : ''}>Código</Link>
-          <Link to="/cadastros" className={location.pathname === '/cadastros' ? 'active' : ''}>Cadastros</Link>
-          <Link to="/configuracoes" className={location.pathname.startsWith('/configuracoes') ? 'active' : ''}>Configurações</Link>
-        </nav>
-        <div className="header-user" data-tour="user-info">
-          <div className="user-info">
-            <strong>{authData.user || 'Usuário'}</strong>
-            <span>Filial {authData.filial || '01'} · {authData.modulo || 'Geral'}</span>
-          </div>
-          <button onClick={handleLogout} className="btn-logout">Sair</button>
-        </div>
-      </header>
+      <AppHeader user={authData} />
 
       <main className="cfg-wrap">
         <div className="cfg-head">

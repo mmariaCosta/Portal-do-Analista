@@ -5,38 +5,31 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // ROTEIRO DO TOUR
 // ============================================================
 const ROTEIRO = [
-  // DASHBOARD
-  { path: '/dashboard', target: 'header-logo',     title: 'Portal do Analista', text: 'Este é o painel do sistema. O logotipo sempre traz você de volta ao início.', duration: 3500 },
+  { path: '/dashboard', target: 'header-logo',     title: 'Protheus Workspace', text: 'Este é o painel do sistema. O logotipo sempre traz você de volta ao início.', duration: 3500 },
   { path: '/dashboard', target: 'header-nav',      title: 'Menu principal',      text: 'Aqui você navega entre as seis áreas do portal.', duration: 3500 },
   { path: '/dashboard', target: 'user-info',       title: 'Seu contexto',        text: 'Usuário, filial e módulo ativos. O botão Sair fica ao lado.', duration: 3500 },
   { path: '/dashboard', target: 'kpis',            title: 'Indicadores em tempo real', text: 'Relatórios disponíveis, chamados abertos, concluídos e o ambiente ativo.', duration: 4000 },
   { path: '/dashboard', target: 'activities',      title: 'Atividades recentes', text: 'Últimos chamados recebidos, ordenados por data.', duration: 3500 },
-  
-  // RELATÓRIOS
+
   { path: '/relatorios', target: 'rel-wrap',       title: 'Central de relatórios', text: 'Quatro rotinas HTML geradas em ADVPL. Cada botão abre o relatório em nova aba.', duration: 4500 },
-  
-  // CHAMADOS
+
   { path: '/tickets', target: 'tk-sidebar',        title: 'Chamados de TI',      text: 'Pastas de organização: caixa de entrada, lidos, concluídos e lixeira.', duration: 4000 },
   { path: '/tickets', target: 'tk-list',           title: 'Lista de mensagens',  text: 'Cada chamado tem categoria visual e status clicável.', duration: 4000 },
-  
-  // CÓDIGO
+
   { path: '/codigo', target: 'dev-tabs',           title: 'SQL & ADVPL',         text: 'Exemplos reais de queries e rotinas que escrevo no dia a dia.', duration: 4000 },
   { path: '/codigo', target: 'dev-code',           title: 'Editor de código',    text: 'Cada trecho é comentado explicando as decisões técnicas.', duration: 4500 },
-  
-  // CADASTROS
+
   { path: '/cadastros', target: 'cad-explorer',    title: 'Dicionário Protheus', text: 'Explore as tabelas SA1, SA3, SC5 e SC6 com todos os campos mapeados.', duration: 4500 },
   { path: '/cadastros', target: 'cad-timeline',    title: 'Ciclo de vida de um campo', text: 'As cinco etapas obrigatórias: SX2, SX3, SIX, SX7 e reindexação.', duration: 4000 },
-  
-  // CONFIGURAÇÕES
+
   { path: '/configuracoes', target: 'cfg-actions', title: 'Ações com permissões', text: 'Cada ação abre uma tela específica — visualização somente leitura, alteração editável, exclusão com confirmação.', duration: 4500 },
   { path: '/configuracoes', target: 'cfg-list',    title: 'Lista de usuários',   text: 'Gestão completa de usuários. Clique em uma linha para selecionar e escolha uma ação.', duration: 4000 },
-  
-  // VOLTA AO DASHBOARD
-  { path: '/dashboard', target: 'header-logo',     title: 'Fim do tour',         text: 'Este foi o Portal do Analista. Explore as telas e conheça o trabalho.', duration: 4000 },
+
+  { path: '/dashboard', target: 'header-logo',     title: 'Fim do tour',         text: 'Este foi o Protheus Workspace. Explore as telas e conheça o trabalho.', duration: 4000 },
 ];
 
 const TOOLTIP_W = 380;
-const TOOLTIP_H = 220; // altura estimada
+const TOOLTIP_H = 220;
 const PADDING = 16;
 
 export default function Tour({ active, onFinish }) {
@@ -51,22 +44,47 @@ export default function Tour({ active, onFinish }) {
   const step = ROTEIRO[stepIndex];
   const timerRef = useRef(null);
 
+  // Refs para evitar deps que mudam de referência
+  const navigateRef = useRef(navigate);
+  useEffect(() => {
+    navigateRef.current = navigate;
+  }, [navigate]);
+
+  const onFinishRef = useRef(onFinish);
+  useEffect(() => {
+    onFinishRef.current = onFinish;
+  }, [onFinish]);
+
+  const finishedRef = useRef(false);
+  const navigatedRef = useRef(null); // guarda o último path para o qual navegamos
+
   // Reset ao iniciar
   useEffect(() => {
     if (active) {
       setStepIndex(0);
       setRect(null);
       setVisible(false);
+      finishedRef.current = false;
+      navigatedRef.current = null;
     }
   }, [active]);
 
-  // Navega para o path do passo
+  // Navega para o path do passo — CORRIGIDO
   useEffect(() => {
     if (!active || !step) return;
-    if (location.pathname !== step.path) {
-      navigate(step.path);
-    }
-  }, [active, stepIndex, step, location.pathname, navigate]);
+
+    const targetPath = step.path;
+    const currentPath = location.pathname;
+
+    // Se já estamos no path correto, não faz nada
+    if (currentPath === targetPath) return;
+
+    // Se já navegamos para esse path nesse ciclo, não navega de novo
+    if (navigatedRef.current === targetPath) return;
+
+    navigatedRef.current = targetPath;
+    navigateRef.current(targetPath);
+  }, [active, stepIndex, step?.path, location.pathname]);
 
   // Localiza o elemento-alvo e agenda o próximo passo
   useEffect(() => {
@@ -110,9 +128,9 @@ export default function Tour({ active, onFinish }) {
       cancelled = true;
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [active, stepIndex, step, location.pathname]);
+  }, [active, stepIndex, step?.path, step?.target, step?.duration, location.pathname]);
 
-  // Calcula posição do tooltip sempre que o rect mudar
+  // Calcula posição do tooltip
   useEffect(() => {
     if (!rect) return;
 
@@ -125,30 +143,23 @@ export default function Tour({ active, onFinish }) {
 
     let top, left, useTransform = false;
 
-    // Prioridade: abaixo → acima → direita → esquerda
     if (spaceBelow >= TOOLTIP_H + PADDING * 2) {
-      // Coloca abaixo
       top = rect.top + rect.height + PADDING;
       left = rect.left + rect.width / 2 - TOOLTIP_W / 2;
     } else if (spaceAbove >= TOOLTIP_H + PADDING * 2) {
-      // Coloca acima (usa transform para subir)
       top = rect.top - PADDING;
       left = rect.left + rect.width / 2 - TOOLTIP_W / 2;
       useTransform = true;
     } else if (spaceRight >= TOOLTIP_W + PADDING * 2) {
-      // Coloca à direita
       top = rect.top + rect.height / 2 - TOOLTIP_H / 2;
       left = rect.left + rect.width + PADDING;
     } else {
-      // Coloca à esquerda
       top = rect.top + rect.height / 2 - TOOLTIP_H / 2;
       left = rect.left - TOOLTIP_W - PADDING;
     }
 
-    // Trava horizontal (não deixar sair da tela)
     left = Math.max(PADDING, Math.min(left, vw - TOOLTIP_W - PADDING));
 
-    // Trava vertical (não deixar sair da tela)
     if (top < PADDING) top = PADDING;
     if (top + TOOLTIP_H > vh - PADDING) {
       top = vh - TOOLTIP_H - PADDING;
@@ -157,12 +168,15 @@ export default function Tour({ active, onFinish }) {
     setTooltipPos({ top, left, useTransform });
   }, [rect]);
 
-  // Fim do tour
+  // Fim do tour — protegido
   useEffect(() => {
-    if (active && stepIndex >= ROTEIRO.length) {
-      onFinish();
-    }
-  }, [stepIndex, active, onFinish]);
+    if (!active) return;
+    if (stepIndex < ROTEIRO.length) return;
+    if (finishedRef.current) return;
+
+    finishedRef.current = true;
+    onFinishRef.current();
+  }, [stepIndex, active]);
 
   if (!active) return null;
   if (!step) return null;

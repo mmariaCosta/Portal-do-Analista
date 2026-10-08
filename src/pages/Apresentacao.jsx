@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import Galeria from '../components/Galeria';
 
 export default function Apresentacao() {
   const navigate = useNavigate();
@@ -184,7 +185,7 @@ export default function Apresentacao() {
         </div>
       </section>
 
-      {/* GALERIA — screenshots reais */}
+      {/* GALERIA — carrossel de screenshots */}
       <section className="ap-section" id="galeria">
         <div className="ap-sec-label">
           <span>03</span>
@@ -192,45 +193,7 @@ export default function Apresentacao() {
           <span>Galeria</span>
         </div>
 
-        <div className="ap-gallery">
-
-          <figure className="ap-gallery-item">
-            <img
-              src="/screenshots/login.png"
-              alt="Tela de login com seleção de filial e módulo"
-              loading="lazy"
-            />
-            <figcaption>Autenticação com contexto Protheus</figcaption>
-          </figure>
-
-          <figure className="ap-gallery-item">
-            <img
-              src="/screenshots/dashboard.png"
-              alt="Painel de controle com KPIs dinâmicos"
-              loading="lazy"
-            />
-            <figcaption>Painel com indicadores em tempo real</figcaption>
-          </figure>
-
-          <figure className="ap-gallery-item">
-            <img
-              src="/screenshots/relatorio.png"
-              alt="Relatório HTML com agrupamentos e subtotais"
-              loading="lazy"
-            />
-            <figcaption>Relatório HTML com subtotais e impressão</figcaption>
-          </figure>
-
-          <figure className="ap-gallery-item">
-            <img
-              src="/screenshots/chamados.png"
-              alt="Gestão de chamados de TI por pastas"
-              loading="lazy"
-            />
-            <figcaption>Chamados categorizados por pasta e cor</figcaption>
-          </figure>
-
-        </div>
+        <Galeria />
       </section>
 
       {/* STACK */}
