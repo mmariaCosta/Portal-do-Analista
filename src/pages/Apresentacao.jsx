@@ -96,7 +96,7 @@ export default function Apresentacao() {
             <p>
               Também é parte do meu caminho para segurança. Entender como um sistema
               é construído por dentro é o primeiro passo para aprender a proteger ele.
-              Meu próximo projeto é o <strong>SkyGuard</strong>, uma simulação de
+              Meu próximo projeto é a <strong>Torre de Controle</strong>, uma simulação de
               central de monitoramento de segurança.
             </p>
             <p className="ap-section-note">
