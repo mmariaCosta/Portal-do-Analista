@@ -10,7 +10,9 @@ export default function Dashboard() {
     relatorios: 4,
     chamadosAbertos: 0,
     chamadosConcluidos: 0,
-    ultimosChamados: []
+    ultimosChamados: [],
+    porPrioridade: { P1: 0, P2: 0, P3: 0 },
+    porCategoria: { Acesso: 0, Suporte: 0, Erro: 0, Urgente: 0 },
   });
 
   useEffect(() => {
@@ -20,9 +22,9 @@ export default function Dashboard() {
       emails = JSON.parse(saved);
     } else {
       emails = [
-        { id: 1, remetente: 'joao.silva@empresa.com', assunto: 'Desbloqueio de Usuário', status: 'nao_lido', categoria: 'Acesso', data: '10/10/2024 09:30' },
-        { id: 2, remetente: 'maria.souza@empresa.com', assunto: 'Criação de Usuário', status: 'nao_lido', categoria: 'Acesso', data: '10/10/2024 08:15' },
-        { id: 3, remetente: 'carlos.mendes@empresa.com', assunto: 'Acesso a Relatório', status: 'nao_lido', categoria: 'Suporte', data: '09/10/2024 16:45' },
+        { id: 1, remetente: 'joao.silva@empresa.com', assunto: 'Desbloqueio de Usuário', status: 'nao_lido', categoria: 'Acesso', prioridade: 'P2', data: '10/10/2024 09:30' },
+        { id: 2, remetente: 'maria.souza@empresa.com', assunto: 'Criação de Usuário', status: 'nao_lido', categoria: 'Acesso', prioridade: 'P3', data: '10/10/2024 08:15' },
+        { id: 3, remetente: 'carlos.mendes@empresa.com', assunto: 'Acesso a Relatório', status: 'nao_lido', categoria: 'Suporte', prioridade: 'P3', data: '09/10/2024 16:45' },
       ];
     }
 
@@ -33,11 +35,24 @@ export default function Dashboard() {
       .sort((a, b) => b.id - a.id)
       .slice(0, 3);
 
+    const porPrioridade = { P1: 0, P2: 0, P3: 0 };
+    const porCategoria = { Acesso: 0, Suporte: 0, Erro: 0, Urgente: 0 };
+
+    abertos.forEach(e => {
+      const prio = e.prioridade || 'P3';
+      if (porPrioridade[prio] !== undefined) porPrioridade[prio]++;
+
+      const cat = e.categoria || 'Acesso';
+      if (porCategoria[cat] !== undefined) porCategoria[cat]++;
+    });
+
     setStats({
       relatorios: 4,
       chamadosAbertos: abertos.length,
       chamadosConcluidos: concluidos.length,
-      ultimosChamados: recentes
+      ultimosChamados: recentes,
+      porPrioridade,
+      porCategoria,
     });
   }, []);
 
@@ -51,15 +66,27 @@ export default function Dashboard() {
     }
   };
 
+  const getCorPrioridade = (prio) => {
+    switch (prio) {
+      case 'P1': return 'var(--danger)';
+      case 'P2': return 'var(--warning)';
+      case 'P3': return '#2563eb';
+      default: return 'var(--text-dim)';
+    }
+  };
+
   const hoje = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
+
+  const totalAbertos = stats.chamadosAbertos || 1;
 
   return (
     <div className="app-container">
       <AppHeader user={authData} />
 
       <main className="dash-wrap">
+        {/* HEAD */}
         <div className="dash-head">
           <div className="dash-eyebrow">{hoje}</div>
           <h1 className="dash-title">
@@ -72,6 +99,7 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* KPIs */}
         <div className="dash-kpis" data-tour="kpis">
           <div className="dash-kpi">
             <div className="dash-kpi-label">Relatórios</div>
@@ -97,6 +125,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* LINHA 1: Atividades + Ações */}
         <div className="dash-cols">
           <div data-tour="activities">
             <div className="dash-col-head">
@@ -153,8 +182,121 @@ export default function Dashboard() {
                 </div>
                 <span className="dash-action-arrow">→</span>
               </button>
+
+              <button className="dash-action" onClick={() => navigate('/cadastros')}>
+                <div className="dash-action-body">
+                  <strong>Consultar dicionário</strong>
+                  <span>Tabelas e campos Protheus</span>
+                </div>
+                <span className="dash-action-arrow">→</span>
+              </button>
             </div>
           </div>
+        </div>
+
+        {/* LINHA 2: Analytics */}
+        <div className="dash-analytics" data-tour="dash-analytics">
+
+          {/* Painel 1 — Prioridade */}
+          <div className="dash-panel">
+            <div className="dash-panel-head">
+              <h3>Chamados por prioridade</h3>
+              <span className="dash-panel-sub">{stats.chamadosAbertos} em aberto</span>
+            </div>
+            <div className="dash-bars">
+              {['P1', 'P2', 'P3'].map(prio => {
+                const valor = stats.porPrioridade[prio] || 0;
+                const pct = Math.round((valor / totalAbertos) * 100);
+                return (
+                  <div key={prio} className="dash-bar-row">
+                    <div className="dash-bar-label">
+                      <span className="dash-bar-badge" style={{ background: getCorPrioridade(prio) }}>
+                        {prio}
+                      </span>
+                      <span className="dash-bar-name">
+                        {prio === 'P1' ? 'Crítico' : prio === 'P2' ? 'Alto' : 'Normal'}
+                      </span>
+                    </div>
+                    <div className="dash-bar-track">
+                      <div
+                        className="dash-bar-fill"
+                        style={{ width: `${pct}%`, background: getCorPrioridade(prio) }}
+                      />
+                    </div>
+                    <div className="dash-bar-value">{valor}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Painel 2 — Categoria */}
+          <div className="dash-panel">
+            <div className="dash-panel-head">
+              <h3>Chamados por categoria</h3>
+              <span className="dash-panel-sub">Distribuição atual</span>
+            </div>
+            <div className="dash-bars">
+              {['Acesso', 'Suporte', 'Erro', 'Urgente'].map(cat => {
+                const valor = stats.porCategoria[cat] || 0;
+                const pct = Math.round((valor / totalAbertos) * 100);
+                return (
+                  <div key={cat} className="dash-bar-row">
+                    <div className="dash-bar-label">
+                      <span
+                        className="dash-bar-dot"
+                        style={{ background: getCorCategoria(cat) }}
+                      ></span>
+                      <span className="dash-bar-name">{cat}</span>
+                    </div>
+                    <div className="dash-bar-track">
+                      <div
+                        className="dash-bar-fill"
+                        style={{ width: `${pct}%`, background: getCorCategoria(cat) }}
+                      />
+                    </div>
+                    <div className="dash-bar-value">{valor}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Painel 3 — Ambiente */}
+          <div className="dash-panel">
+            <div className="dash-panel-head">
+              <h3>Saúde do ambiente</h3>
+              <span className="dash-panel-sub">Últimas 24h</span>
+            </div>
+
+            <div className="dash-env">
+              <div className="dash-env-row">
+                <div className="dash-env-label">Uptime</div>
+                <div className="dash-env-value ok">99.98%</div>
+              </div>
+
+              <div className="dash-env-row">
+                <div className="dash-env-label">Última reindexação</div>
+                <div className="dash-env-value">02/10 às 23:15</div>
+              </div>
+
+              <div className="dash-env-row">
+                <div className="dash-env-label">Backup automático</div>
+                <div className="dash-env-value">há 2 horas</div>
+              </div>
+
+              <div className="dash-env-row">
+                <div className="dash-env-label">Fila de processos</div>
+                <div className="dash-env-value">0 pendentes</div>
+              </div>
+
+              <div className="dash-env-row">
+                <div className="dash-env-label">Usuários ativos</div>
+                <div className="dash-env-value">3 conectados</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </main>
     </div>

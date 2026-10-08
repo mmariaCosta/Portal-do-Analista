@@ -4058,3 +4058,181 @@ input, select, textarea { font-family: inherit; }
     aspect-ratio: 4 / 3;
   }
 }
+
+/* ============================================================
+   DASHBOARD — Análise operacional
+   ============================================================ */
+.dash-analytics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+
+.dash-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: background 0.25s, border-color 0.25s;
+}
+
+.dash-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-panel-head h3 {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.dash-panel-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Barras horizontais */
+.dash-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash-bar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 32px;
+  gap: 12px;
+  align-items: center;
+}
+
+.dash-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.dash-bar-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+
+.dash-bar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dash-bar-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-bar-track {
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.dash-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 2px;
+}
+
+.dash-bar-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Painel de ambiente */
+.dash-env {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash-env-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.dash-env-label {
+  color: var(--text-muted);
+}
+
+.dash-env-value {
+  color: var(--text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.dash-env-value.ok {
+  color: var(--success);
+}
+
+/* Responsivo */
+@media (max-width: 1024px) {
+  .dash-analytics {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dash-analytics {
+    margin-top: 40px;
+    gap: 16px;
+  }
+
+  .dash-panel {
+    padding: 20px;
+  }
+
+  .dash-bar-row {
+    grid-template-columns: 90px 1fr 28px;
+    gap: 8px;
+  }
+
+  .dash-bar-name {
+    font-size: 0.78rem;
+  }
+}
+.ap-about-avatar-foto {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 30%;
+  padding: 0;
+  font-size: 0;
+  border: 3px solid var(--surface-2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  background: var(--surface-2);
+}

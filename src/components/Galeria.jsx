@@ -11,15 +11,15 @@ const IMAGENS = [
     alt: 'Painel de controle com KPIs dinâmicos',
     titulo: 'Painel com indicadores em tempo real',
   },
+    {
+    src: '/screenshots/relatorios.png',
+    alt: 'Relatório HTML com agrupamentos e subtotais',
+    titulo: 'Relatório HTML com subtotais e impressão',
+  },
   {
     src: '/screenshots/chamados.png',
     alt: 'Gestão de chamados de TI por pastas',
     titulo: 'Chamados categorizados por pasta e cor',
-  },
-  {
-    src: '/screenshots/relatorios.png',
-    alt: 'Relatório HTML com agrupamentos e subtotais',
-    titulo: 'Relatório HTML com subtotais e impressão',
   },
   {
     src: '/screenshots/codigo.png',

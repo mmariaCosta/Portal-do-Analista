@@ -1,20 +1,18 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-// ============================================================
-// ROTEIRO DO TOUR
-// ============================================================
 const ROTEIRO = [
   { path: '/dashboard', target: 'header-logo',     title: 'Protheus Workspace', text: 'Este é o painel do sistema. O logotipo sempre traz você de volta ao início.', duration: 3500 },
   { path: '/dashboard', target: 'header-nav',      title: 'Menu principal',      text: 'Aqui você navega entre as seis áreas do portal.', duration: 3500 },
-  { path: '/dashboard', target: 'user-info',       title: 'Seu contexto',        text: 'Usuário, filial e módulo ativos. O botão Sair fica ao lado.', duration: 3500 },
+  { path: '/dashboard', target: 'user-info',       title: 'Seu contexto',        text: 'Usuário, tema, e o botão Sair. Tudo no canto direito.', duration: 3500 },
   { path: '/dashboard', target: 'kpis',            title: 'Indicadores em tempo real', text: 'Relatórios disponíveis, chamados abertos, concluídos e o ambiente ativo.', duration: 4000 },
   { path: '/dashboard', target: 'activities',      title: 'Atividades recentes', text: 'Últimos chamados recebidos, ordenados por data.', duration: 3500 },
+  { path: '/dashboard', target: 'dash-analytics',  title: 'Análise operacional', text: 'Distribuição de chamados por prioridade e categoria, além da saúde do ambiente.', duration: 4500 },
 
   { path: '/relatorios', target: 'rel-wrap',       title: 'Central de relatórios', text: 'Quatro rotinas HTML geradas em ADVPL. Cada botão abre o relatório em nova aba.', duration: 4500 },
 
   { path: '/tickets', target: 'tk-sidebar',        title: 'Chamados de TI',      text: 'Pastas de organização: caixa de entrada, lidos, concluídos e lixeira.', duration: 4000 },
-  { path: '/tickets', target: 'tk-list',           title: 'Lista de mensagens',  text: 'Cada chamado tem categoria visual e status clicável.', duration: 4000 },
+  { path: '/tickets', target: 'tk-list',           title: 'Lista de mensagens',  text: 'Cada chamado tem categoria visual, prioridade e SLA.', duration: 4000 },
 
   { path: '/codigo', target: 'dev-tabs',           title: 'SQL & ADVPL',         text: 'Exemplos reais de queries e rotinas que escrevo no dia a dia.', duration: 4000 },
   { path: '/codigo', target: 'dev-code',           title: 'Editor de código',    text: 'Cada trecho é comentado explicando as decisões técnicas.', duration: 4500 },
@@ -22,8 +20,8 @@ const ROTEIRO = [
   { path: '/cadastros', target: 'cad-explorer',    title: 'Dicionário Protheus', text: 'Explore as tabelas SA1, SA3, SC5 e SC6 com todos os campos mapeados.', duration: 4500 },
   { path: '/cadastros', target: 'cad-timeline',    title: 'Ciclo de vida de um campo', text: 'As cinco etapas obrigatórias: SX2, SX3, SIX, SX7 e reindexação.', duration: 4000 },
 
-  { path: '/configuracoes', target: 'cfg-actions', title: 'Ações com permissões', text: 'Cada ação abre uma tela específica — visualização somente leitura, alteração editável, exclusão com confirmação.', duration: 4500 },
-  { path: '/configuracoes', target: 'cfg-list',    title: 'Lista de usuários',   text: 'Gestão completa de usuários. Clique em uma linha para selecionar e escolha uma ação.', duration: 4000 },
+  { path: '/configuracoes', target: 'cfg-actions', title: 'Ações com permissões', text: 'Cada ação abre uma tela específica — visualizar, alterar ou excluir.', duration: 4500 },
+  { path: '/configuracoes', target: 'cfg-list',    title: 'Lista de usuários',   text: 'Gestão completa. Clique em uma linha para selecionar.', duration: 4000 },
 
   { path: '/dashboard', target: 'header-logo',     title: 'Fim do tour',         text: 'Este foi o Protheus Workspace. Explore as telas e conheça o trabalho.', duration: 4000 },
 ];
@@ -44,19 +42,15 @@ export default function Tour({ active, onFinish }) {
   const step = ROTEIRO[stepIndex];
   const timerRef = useRef(null);
 
-  // Refs para evitar deps que mudam de referência
+  // --- refs para evitar deps instáveis ---
   const navigateRef = useRef(navigate);
-  useEffect(() => {
-    navigateRef.current = navigate;
-  }, [navigate]);
+  useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
   const onFinishRef = useRef(onFinish);
-  useEffect(() => {
-    onFinishRef.current = onFinish;
-  }, [onFinish]);
+  useEffect(() => { onFinishRef.current = onFinish; }, [onFinish]);
 
   const finishedRef = useRef(false);
-  const navigatedRef = useRef(null); // guarda o último path para o qual navegamos
+  const navigatedRef = useRef(null);
 
   // Reset ao iniciar
   useEffect(() => {
@@ -69,24 +63,21 @@ export default function Tour({ active, onFinish }) {
     }
   }, [active]);
 
-  // Navega para o path do passo — CORRIGIDO
+  // Navegação — protegida contra loop
   useEffect(() => {
     if (!active || !step) return;
 
     const targetPath = step.path;
     const currentPath = location.pathname;
 
-    // Se já estamos no path correto, não faz nada
     if (currentPath === targetPath) return;
-
-    // Se já navegamos para esse path nesse ciclo, não navega de novo
     if (navigatedRef.current === targetPath) return;
 
     navigatedRef.current = targetPath;
     navigateRef.current(targetPath);
   }, [active, stepIndex, step?.path, location.pathname]);
 
-  // Localiza o elemento-alvo e agenda o próximo passo
+  // Localiza o alvo e agenda próximo passo
   useEffect(() => {
     if (!active || !step) return;
     if (location.pathname !== step.path) return;
@@ -130,7 +121,7 @@ export default function Tour({ active, onFinish }) {
     };
   }, [active, stepIndex, step?.path, step?.target, step?.duration, location.pathname]);
 
-  // Calcula posição do tooltip
+  // Posição do tooltip
   useEffect(() => {
     if (!rect) return;
 
@@ -159,11 +150,8 @@ export default function Tour({ active, onFinish }) {
     }
 
     left = Math.max(PADDING, Math.min(left, vw - TOOLTIP_W - PADDING));
-
     if (top < PADDING) top = PADDING;
-    if (top + TOOLTIP_H > vh - PADDING) {
-      top = vh - TOOLTIP_H - PADDING;
-    }
+    if (top + TOOLTIP_H > vh - PADDING) top = vh - TOOLTIP_H - PADDING;
 
     setTooltipPos({ top, left, useTransform });
   }, [rect]);
