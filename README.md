@@ -1,159 +1,207 @@
-# 🎯 Protheus Workspace
+# Protheus Workspace
 
-> Um projeto de estudo que virou portfólio: simulando o dia a dia de um analista no ecossistema TOTVS Protheus com relatórios HTML-ADVPL, chamados de TI e painel de indicadores.
+Portfólio interativo que simula um ambiente corporativo do ecossistema TOTVS Protheus.
+Login, painel de indicadores, geração de relatórios, gestão de chamados e controle de
+usuários funcionam de verdade dentro do navegador, com dados inventados.
 
-[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![ADVPL](https://img.shields.io/badge/ADVPL-Protheus-00A651?style=flat&logoColor=white)](https://www.totvs.com/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
----
-
-## 📖 Índice
-
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Segurança](#-segurança)
-- [Como Executar](#-como-executar)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [O que aprendi com este projeto](#-o-que-aprendi-com-este-projeto)
-- [Próximos passos](#-próximos-passos)
-- [Sobre mim](#-sobre-mim)
-- [Licença](#-licença)
+**Demo:** https://protheus-workspace.vercel.app/
 
 ---
 
-## 💡 Sobre o Projeto
+## Sobre o projeto
 
-Sou estudante de **Técnico em TI no COTUCA (Unicamp)** e fui aprovada em **Cibersegurança na FIAP**. Trabalho com **ADVPL e Protheus** no dia a dia e decidi criar este projeto para juntar duas coisas que gosto muito: sistemas corporativos e desenvolvimento web.
+Sou estudante do Técnico em TI no COTUCA (Unicamp) e fui aprovada em Cibersegurança
+na FIAP. Trabalho com ADVPL e Protheus no dia a dia e construí esse projeto para juntar
+duas coisas que gosto: sistemas corporativos e desenvolvimento web.
 
-A ideia foi simples: **simular o ambiente real de um analista de sistemas** em uma aplicação que qualquer pessoa pode abrir no navegador. Tudo funciona de verdade — não é um mockup estático.
+A ideia era simples. Criar uma aplicação que qualquer pessoa pudesse abrir no navegador
+e ver, na prática, o tipo de tarefa que eu resolvo no trabalho. Nada de imagem estática
+de tela. Cada botão clicado produz efeito, cada formulário tem validação, cada número
+vem de cálculo real sobre dados fictícios.
 
-> ⚠️ **Todos os dados são fictícios.** Nenhuma informação real de empresa ou cliente é utilizada. É um ambiente seguro para demonstração.
+Usei o Protheus como tema porque é o sistema que eu conheço. Mas o projeto também
+é parte do meu caminho para segurança. Entender como um sistema é construído por
+dentro é o primeiro passo para aprender a proteger ele.
 
-### Por que fiz este projeto?
-
-- Para praticar **React + CSS** fora da sala de aula
-- Para mostrar, na prática, o tipo de coisa que faço com **ADVPL e Protheus**
-- Para aprender sobre **segurança web** aplicada (que é a área que vou estudar na FIAP)
-- Para ter um portfólio real, construído por mim, do zero
-
-Não vou fingir que sei tudo — este projeto tem coisas que eu ainda estou aprendendo. Mas foi feito com cuidado, testado e pensado para ser útil para quem for avaliar meu trabalho.
-
----
-
-## ✨ Funcionalidades
-
-### 🔐 Login
-- Entrada com **Filial** + **Módulo** (como no Protheus)
-- Bloqueio após 5 tentativas erradas (para não deixar tentar senha infinitas vezes)
-- Sessão que expira depois de 30 minutos parado
-- Nenhuma senha fica guardada — só um token aleatório
-
-### 📊 Dashboard
-- Números que mudam conforme você interage com o sistema
-- Lista dos últimos chamados recebidos
-- Atalhos para as tarefas mais comuns
-
-### 📄 Relatórios ADVPL (4 tipos)
-- **Títulos a Receber** — cards por cliente
-- **Performance de Vendas** — ranking com barras
-- **Posição de Estoque** — nível visual (mín/máx)
-- **Cadastro de Clientes** — grid com índice por estado
-- Botões de **Imprimir** e **Exportar CSV** que funcionam
-
-### 🎫 Chamados de TI
-- Funciona como um e-mail: caixa de entrada, lidos, concluídos, lixeira
-- Categorias coloridas (Acesso, Suporte, Erro, Urgente)
-- Posso responder, encaminhar e concluir
-- 10 chamados fictícios já vêm prontos para testar
-
-### 💻 Tela de Código
-- Exemplos de **SQL** e **ADVPL** com syntax highlighting
-- Cada trecho comentado explicando o que faz
-
-### 📚 Cadastros Protheus
-- Explorador das tabelas **SA1, SA3, SC5 e SC6**
-- Mostra todos os campos com tipo, tamanho e obrigatoriedade
-- Explica o ciclo de vida de um campo novo: **SX2 → SX3 → SIX → SX7 → Reindex**
-
-### ⚙️ Configurações de Usuários
-- Lista de usuários cadastrados
-- Três ações: **Visualizar**, **Alterar** e **Excluir**
-- Cada ação abre uma tela diferente com permissões diferentes
-
-### 🎬 Tour Automático
-- Passa por todas as telas sozinho, mostrando o que cada uma faz
-- Aparece automaticamente no primeiro login
-
-### 📱 Funciona no celular
-- Testado em várias resoluções
-- Menu e listas se adaptam para telas pequenas
+**Nenhum dado é real.** Nenhuma informação de empresa ou cliente foi utilizada.
 
 ---
 
-## 🛠 Tecnologias
+## Funcionalidades
 
-Essas são as ferramentas que usei. Algumas eu já conhecia, outras estou aprendendo:
+### Login
+- Entrada apenas com o nome, sem banco de dados nem senha
+- Bloqueio temporário após 5 tentativas seguidas, o usuário tem que ser composto com mais de dois caracteres
+- Sessão com expiração automática após 30 minutos sem atividade
+- Limpeza completa dos dados ao sair
 
-### Front-end
-![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=white&style=flat-square)
-![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white&style=flat-square)
-![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black&style=flat-square)
-![CSS3](https://img.shields.io/badge/-CSS3-1572B6?logo=css3&logoColor=white&style=flat-square)
+### Painel de controle
+- Quatro indicadores no topo (relatórios disponíveis, chamados abertos,
+  concluídos e status do ambiente)
+- Lista de atividades recentes com cor por categoria
+- Três ações rápidas para as tarefas mais usadas
+- Três painéis de análise: chamados por prioridade, por categoria e saúde
+  do ambiente (uptime, última reindexação, backup, fila de processos e
+  usuários conectados)
 
-### Protheus / Back-end simulado
-![ADVPL](https://img.shields.io/badge/-ADVPL-00A651?style=flat-square)
-![TOTVS Protheus](https://img.shields.io/badge/-TOTVS%20Protheus-000000?style=flat-square)
-![SQL](https://img.shields.io/badge/-SQL-4479A1?style=flat-square)
+### Relatórios
+Quatro rotinas que geram documentos completos em nova aba:
+- **Títulos a Receber**, com agrupamento por cliente, status de vencimento
+  e total geral
+- **Performance de Vendas**, com ranking e barra de progresso por vendedor
+- **Posição de Estoque**, com indicador visual de nível (mínimo e máximo)
+  e alerta de produto crítico
+- **Cadastro de Clientes**, com dados de contato, status e índice por estado
+
+Cada relatório tem botão de impressão (abre a janela do navegador) e de
+exportação em planilha. Tudo com marca d'água de demonstração.
+
+### Chamados de TI
+- Caixa de entrada no estilo cliente de e-mail
+- Pastas: caixa de entrada, não lidos, lidos, concluídos e lixeira
+- Cada chamado tem número de protocolo, prioridade, prazo de atendimento
+  e categoria (Acesso, Suporte, Erro, Urgente)
+- Filtros rápidos para urgentes e para chamados sem resposta
+- Detalhe mostra histórico em formato de timeline (aberto, visualizado,
+  respondido, concluído)
+- Resposta, encaminhamento, marcação de lido e conclusão
+
+### Código e Dicionário
+- Aba de SQL com consultas comentadas explicando cada decisão
+- Aba de ADVPL com rotina real devolvendo dados em formato de texto
+- Bloco de código com numeração de linha e destaque de sintaxe
+- Dicionário de dados do Protheus com as tabelas de clientes, vendedores,
+  pedidos e itens
+- Cada tabela lista os campos com tipo, tamanho, obrigatoriedade e descrição
+- Explicação do ciclo de vida de um campo novo em cinco etapas
+
+### Configurações de usuários
+- Lista de usuários cadastrados com status visual
+- Três ações por registro: visualizar, alterar e excluir
+- Cada ação abre uma tela com permissões diferentes
+- Validação de e-mail, senha e campos obrigatórios
+- Exclusão pede confirmação explícita antes de executar
+
+### Tour guiado
+Passa por todas as telas automaticamente, destacando os elementos
+principais e explicando o que cada um faz. Aparece no primeiro login
+e pode ser acionado a qualquer momento pelo botão fixo no canto.
+
+### Tema claro e escuro
+Um botão no cabeçalho alterna entre os dois temas. A escolha fica salva
+no navegador e é respeitada nos relatórios que abrem em nova aba.
+
+### Notificação de demonstração
+Após o login, um card no canto superior direito simula a chegada de um
+chamado novo. Ao clicar, o sistema abre direto na tela de chamados.
+
+### Responsividade
+Layout adaptado para tablet e celular. Menu horizontal vira lista
+deslizável, colunas se empilham, formulários se reorganizam.
 
 ---
 
-## 🔒 Segurança
+## Tecnologias e decisões técnicas
 
-Essa é a parte que mais me interessou estudar — tanto que vou cursar Cibersegurança na FIAP. Aqui eu tentei aplicar as recomendações do **OWASP Top 10** que estudei por conta própria.
+### React
+Base do projeto. Escolhi porque é a ferramenta que estou mais ultilizando no momento e porque permite que cada tela seja um componente com
+responsabilidade clara. O sistema tem sete telas e quatro relatórios
+gerados dinamicamente, então componentização ajuda bastante.
 
-### O que eu fiz
+### Vite
+Substitui o Create React App. Motivo principal é velocidade: build e
+recarga em tempo real são muito mais rápidos. Também tem configuração
+menos verbosa.
 
-| Ameaça | Como eu tentei evitar |
-|---|---|
-| **XSS** (injetar script nos campos) | Sanitizo tudo que entra e escapo tudo que sai |
-| **Força bruta no login** | Bloqueio após 5 tentativas por 60 segundos |
-| **Sessão eterna** | Timeout de 30 minutos de inatividade |
-| **Senhas guardadas** | Não guardo senha nenhuma, só um token |
-| **Iframe malicioso** | Configurei `X-Frame-Options: DENY` |
-| **Scripts externos** | Content Security Policy bloqueia o que não é meu |
-| **HTTP sem segurança** | Forço HTTPS em produção |
+### JavaScript puro, sem TypeScript
+Ainda estou aprendendo TypeScript. Para esse projeto, o esforço de
+tipagem não compensava o prazo, e JavaScript resolve bem.
 
-### O que eu **ainda não sei** fazer
+### CSS puro, sem framework
+Optei por CSS escrito à mão. Aprendi muito mais sobre variáveis CSS,
+media queries, grid e flexbox do que se tivesse usado Tailwind ou
+Bootstrap. E o resultado tem identidade visual própria.
 
-Como este é um projeto só de front-end (sem servidor de verdade), várias proteções importantes **não podem ser feitas aqui**. Eu sei disso e anotei no arquivo [`SECURITY.md`](SECURITY.md):
+### Variáveis CSS para tema
+Os dois temas (claro e escuro) usam o mesmo conjunto de variáveis CSS.
+O botão de alternar apenas muda um atributo no `<html>`, e todas as
+cores do site reagem automaticamente. Isso evitou duplicar CSS.
 
-- Login com hash de senha (bcrypt/argon2) precisa de backend
-- Tokens JWT assinados precisam de servidor
-- CORS real precisa de servidor
-- Logs de auditoria precisam de servidor
+### localStorage e sessionStorage
+Uso `localStorage` para preferências que devem persistir (tema,
+lista de usuários cadastrados, chamados fictícios). Uso
+`sessionStorage` para a sessão de login, que precisa sumir quando
+o usuário fecha a aba.
 
-**Sinceridade:** isso aqui não é uma aplicação "segura de verdade". É uma demonstração do que eu **entendi** sobre segurança aplicada em front-end. As proteções reais virão quando eu aprender backend.
+### Rotas protegidas
+Toda tela privada é envolvida por um componente que verifica se existe
+sessão ativa. Sem sessão, redireciona para o login. Isso evita acessar
+`/dashboard` direto pela URL.
+
+### Deploy na Vercel
+Escolhi porque a integração com repositório é automática. Cada push
+para a branch principal gera um deploy novo em menos de um minuto.
 
 ---
 
-## 🚀 Como Executar
+## Estrutura do projeto
+    src/
+    components/ Componentes reutilizáveis (header, galeria, tour)
+    hooks/ Hooks personalizados (tema, sessão)
+    pages/ Cada tela da aplicação
+    utils/ Funções auxiliares de segurança
+    App.jsx Configuração das rotas
+    main.jsx Ponto de entrada
+    public/
+    screenshots/ Imagens usadas na galeria
 
-### Você vai precisar de:
-- **Node.js 18+** ([baixar aqui](https://nodejs.org/))
-- **npm** (vem junto com o Node)
 
-### Passo a passo
+---
 
-```bash
-# 1. Baixar o projeto
-git clone https://github.com/seu-usuario/portal-analista.git
-cd portal-analista
+## O que aprendi construindo isso
 
-# 2. Instalar o que precisa
-npm install
+- **Estado persistente é traiçoeiro.** Toda vez que mudei a estrutura
+  dos dados salvos no navegador, precisei escrever migração. Aprendi
+  a versionar formato de dados.
 
-# 3. Rodar
-npm run dev
+- **Loop infinito de renderização é comum em React.** Um `useEffect`
+  com dependência instável trava o navegador. Aprendi a usar `useRef`
+  para valores que não devem disparar re-render.
+
+- **Variáveis CSS mudam tudo.** Fazer tema claro e escuro parecia
+  assustador. Com variáveis, foi questão de trocar valores.
+
+- **Componentizar cedo economiza tempo.** O cabeçalho estava copiado
+  em sete arquivos. Quando precisei mudar, tive que mudar em sete
+  lugares. Aprendi a extrair componente na primeira repetição.
+
+- **Segurança em frontend tem limite.** Muita coisa que parecia
+  fácil (hash de senha, token assinado, log de auditoria) exige
+  backend. Documentei isso em `SECURITY.md`.
+
+---
+
+## Próximos passos
+
+- Migrar para TypeScript
+- Estudar backend para implementar autenticação real
+- Construir o SkyGuard, uma simulação de central de monitoramento
+  de segurança
+- Adicionar testes automatizados
+
+---
+
+## Sobre mim
+
+Maria Costa. Estagiária de desenvolvimento, estudante de Cibersegurança
+na FIAP a partir de 2027.
+
+- E-mail: mmaria.costa@outlook.com
+- LinkedIn: https://www.linkedin.com/in/mmariacosta
+- GitHub: https://github.com/mmariacosta
+
+---
+
+## Licença
+
+MIT. Veja [LICENSE](LICENSE) para detalhes.
