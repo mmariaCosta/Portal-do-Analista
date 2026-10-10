@@ -2,33 +2,24 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- Favicon inline (SVG em data URI) — não gera 404 nem depende de arquivo externo.
+         Se quiser usar um arquivo próprio, troque por:
+         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+         e coloque o favicon.svg dentro da pasta public/ -->
+    <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111114'/%3E%3Cpath d='M9 11l5 5-5 5' stroke='%23a78bfa' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cpath d='M16 21h7' stroke='%23a78bfa' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- ============================================
-         Segurança: Content Security Policy
-         Bloqueia execução de scripts externos e inline
-         (exceto onde permitido explicitamente)
-         ============================================ -->
-    <meta http-equiv="Content-Security-Policy"
-      content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        font-src 'self' https://fonts.gstatic.com data:;
-        img-src 'self' data:;
-        connect-src 'self';
-        frame-ancestors 'none';
-        base-uri 'self';
-        form-action 'self';
-        object-src 'none';
-      " />
+    <!-- ============================================================
+         Segurança — apenas o que FUNCIONA via <meta>.
+         CSP completa e X-Frame-Options devem ser enviados via HTTP
+         header (veja vercel.json).
+         ============================================================ -->
 
     <!-- Impede que o navegador "adivinhe" o tipo de arquivo -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-
-    <!-- Impede a página de ser embutida em iframe (clickjacking) -->
-    <meta http-equiv="X-Frame-Options" content="DENY" />
 
     <!-- Não vaza URL completa para sites externos -->
     <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -37,16 +28,18 @@
     <meta http-equiv="Permissions-Policy"
       content="camera=(), microphone=(), geolocation=(), payment=()" />
 
+    <!-- Tema inicial: aplica antes do React montar, evitando flash -->
     <script>
-    (function() {
-      try {
-        var t = localStorage.getItem('@pw_theme') || 'light';
-        document.documentElement.setAttribute('data-theme', t);
-      } catch (e) {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    })();
-  </script>
+      (function () {
+        try {
+          var t = localStorage.getItem('@pw_theme') || 'light';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
     <title>Protheus Workspace</title>
   </head>
   <body>
