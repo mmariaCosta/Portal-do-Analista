@@ -1,5 +1,4 @@
-markdown
-```
+```markdown
 # Protheus Workspace
 
 Portfólio interativo que simula um ambiente corporativo do ecossistema TOTVS Protheus. Login, painel de indicadores, geração de relatórios, gestão de chamados e controle de usuários funcionam de verdade dentro do navegador, com dados inventados.
@@ -124,13 +123,36 @@ Integração automática com repositório. Cada push gera um deploy novo em meno
 ---
 
 ## Estrutura do projeto
+
 ```
+src/
+├── components/
+│   ├── AppHeader.jsx        Header comum a todas as telas privadas
+│   ├── Galeria.jsx          Carrossel + lightbox da apresentação
+│   ├── ProtectedRoute.jsx   Guarda de rotas autenticadas
+│   └── Tour.jsx             Tour guiado automático
+├── hooks/
+│   └── useTheme.js          Hook de tema claro/escuro
+├── pages/
+│   ├── Apresentacao.jsx     Landing page pública
+│   ├── Cadastros.jsx        Dicionário de dados Protheus
+│   ├── Codigo.jsx           Trechos SQL e ADVPL
+│   ├── Configuracoes.jsx    Lista de usuários
+│   ├── Dashboard.jsx        Painel inicial
+│   ├── Login.jsx            Autenticação simplificada
+│   ├── Relatorios.jsx       Central de relatórios
+│   ├── Tickets.jsx          Gestão de chamados
+│   └── UsuarioDetalhe.jsx   Visualizar / alterar / excluir usuário
+├── utils/
+│   └── security.js          Sanitização, validação e rate limiting
+├── App.jsx                  Configuração de rotas
+├── App.css                  Estilos globais (tema, layout, responsivo)
+├── index.css                Reset e base
+└── main.jsx                 Ponto de entrada
 
-src/ ├── components/ │ ├── AppHeader.jsx Header comum a todas as telas privadas │ ├── Galeria.jsx Carrossel + lightbox da apresentação │ ├── ProtectedRoute.jsx Guarda de rotas autenticadas │ └── Tour.jsx Tour guiado automático ├── hooks/ │ └── useTheme.js Hook de tema claro/escuro ├── pages/ │ ├── Apresentacao.jsx Landing page pública │ ├── Cadastros.jsx Dicionário de dados Protheus │ ├── Codigo.jsx Trechos SQL e ADVPL │ ├── Configuracoes.jsx Lista de usuários │ ├── Dashboard.jsx Painel inicial │ ├── Login.jsx Autenticação simplificada │ ├── Relatorios.jsx Central de relatórios │ ├── Tickets.jsx Gestão de chamados │ └── UsuarioDetalhe.jsx Visualizar / alterar / excluir usuário ├── utils/ │ └── security.js Sanitização, validação e rate limiting ├── App.jsx Configuração de rotas ├── App.css Estilos globais (tema, layout, responsivo) ├── index.css Reset e base └── main.jsx Ponto de entrada
-
-public/ └── screenshots/ Imagens usadas na galeria
-
-````
+public/
+└── screenshots/             Imagens usadas na galeria
+```
 
 ---
 
@@ -155,7 +177,9 @@ npm run build
 
 # pré-visualizar o build
 npm run preview
-````
+```
+
+---
 
 ## Blocos de código relevantes
 
@@ -163,9 +187,7 @@ npm run preview
 
 Evita o "flash" de tema errado ao carregar a página. Fica dentro do `<head>` do `index.html`:
 
-HTMLWrap linesCopiar códigoPreview
-
-```
+```html
 <script>
   (function () {
     try {
@@ -182,8 +204,7 @@ HTMLWrap linesCopiar códigoPreview
 
 Todo o sistema de tema é baseado em variáveis. Trocar o atributo no `<html>` já muda todas as cores:
 
-css
-```
+```css
 :root,
 [data-theme="light"] {
   --bg: #f4f4f6;
@@ -208,8 +229,7 @@ css
 
 Verifica a sessão antes de renderizar a tela privada:
 
-jsx
-```
+```jsx
 import { Navigate } from 'react-router-dom';
 
 export default function ProtectedRoute({ children }) {
@@ -227,8 +247,7 @@ export default function ProtectedRoute({ children }) {
 
 Bloqueio temporário após 5 tentativas — puro JS, em memória:
 
-js
-```
+```js
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MS = 60_000;
 
@@ -258,8 +277,7 @@ export function registerFailedAttempt() {
 
 Remove tags HTML e caracteres de controle antes de qualquer exibição:
 
-js
-```
+```js
 export function sanitizeInput(str, maxLen = 500) {
   if (typeof str !== 'string') return '';
   return str
@@ -275,8 +293,7 @@ export function sanitizeInput(str, maxLen = 500) {
 
 Os relatórios são strings HTML montadas em JS, abertas em nova aba com o tema atual do usuário:
 
-js
-```
+```js
 const temaAtual = document.documentElement.getAttribute('data-theme') || 'light';
 
 const html = `<!DOCTYPE html>
@@ -304,8 +321,7 @@ if (w) {
 
 Sempre que a estrutura dos dados salvos muda, é preciso migrar o que já está no navegador:
 
-js
-```
+```js
 const migrarEmail = (email, idx) => ({
   protocolo: email.protocolo || `#2024-${String(123 - idx).padStart(4, '0')}`,
   solicitante: email.solicitante || email.remetente?.split('@')[0]?.replace('.', ' ') || 'Solicitante',
@@ -320,8 +336,7 @@ const migrarEmail = (email, idx) => ({
 
 No celular, a sidebar de pastas vira uma barra horizontal e o painel de leitura ocupa a tela toda:
 
-css
-```
+```css
 @media (max-width: 640px) {
   .tk-client {
     grid-template-columns: 1fr;
@@ -347,15 +362,15 @@ css
 }
 ```
 
+---
+
 ## Configuração de segurança
 
 ### `index.html`
 
 Apenas diretivas que funcionam via `<meta>` são mantidas:
 
-HTMLWrap linesCopiar códigoPreview
-
-```
+```html
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta http-equiv="Permissions-Policy"
@@ -366,8 +381,7 @@ HTMLWrap linesCopiar códigoPreview
 
 CSP completa e `X-Frame-Options` são enviados via HTTP header, que é o lugar correto:
 
-json
-```
+```json
 {
   "headers": [
     {
@@ -387,34 +401,35 @@ json
 }
 ```
 
+---
+
 ## Problemas encontrados e soluções
 
 ### 1. Aviso no console: `frame-ancestors is ignored when delivered via a <meta> element`
 
-Causa: o navegador ignora `frame-ancestors` quando enviado via `<meta>`. Só funciona via HTTP header.
+**Causa:** o navegador ignora `frame-ancestors` quando enviado via `<meta>`. Só funciona via HTTP header.
 
-Solução: remover do `<meta>` e mover para `vercel.json`.
+**Solução:** remover do `<meta>` e mover para `vercel.json`.
 
 ### 2. Aviso no console: `X-Frame-Options may only be set via an HTTP header`
 
-Causa: mesmo problema. Via `<meta>` não tem efeito.
+**Causa:** mesmo problema. Via `<meta>` não tem efeito.
 
-Solução: remover do `<meta>` e mover para `vercel.json`.
+**Solução:** remover do `<meta>` e mover para `vercel.json`.
 
 ### 3. `GET /vite.svg 404`
 
-Causa: o `index.html` referenciava `/vite.svg`, mas o arquivo não existia mais em `public/`.
+**Causa:** o `index.html` referenciava `/vite.svg`, mas o arquivo não existia mais em `public/`.
 
-Solução: trocar por um favicon SVG inline em `data:` ou colocar um arquivo próprio em `public/favicon.svg`.
+**Solução:** trocar por um favicon SVG inline em `data:` ou colocar um arquivo próprio em `public/favicon.svg`.
 
 ### 4. Painel de leitura de chamados não abria no celular
 
-Causa: o CSS usava `.tk-client:has(.tk-read-content) .tk-read { display: flex }`, mas o JSX não aplicava a classe `tk-read-content` em lugar nenhum. O `:has()` nunca dava match, e o painel de leitura continuava com `display: none` herdado da media query de tablet.
+**Causa:** o CSS usava `.tk-client:has(.tk-read-content) .tk-read { display: flex }`, mas o JSX não aplicava a classe `tk-read-content` em lugar nenhum. O `:has()` nunca dava match, e o painel de leitura continuava com `display: none` herdado da media query de tablet.
 
-Solução: trocar `.tk-read-content` por `.tk-read-card` no CSS, que é a classe realmente aplicada no JSX:
+**Solução:** trocar `.tk-read-content` por `.tk-read-card` no CSS, que é a classe realmente aplicada no JSX:
 
-css
-```
+```css
 @media (max-width: 640px) {
   .tk-client:has(.tk-read-card) .tk-list { display: none; }
   .tk-client:has(.tk-read-card) .tk-read { display: flex; }
@@ -423,12 +438,11 @@ css
 
 ### 5. Loop infinito de renderização no tour
 
-Causa: `useEffect` com dependências instáveis (função `navigate` recriada a cada render) disparava em loop.
+**Causa:** `useEffect` com dependências instáveis (função `navigate` recriada a cada render) disparava em loop.
 
-Solução: isolar `navigate` e `onFinish` em `useRef` para não virar dependência reativa, e guardar a última rota navegada em `navigatedRef`.
+**Solução:** isolar `navigate` e `onFinish` em `useRef` para não virar dependência reativa, e guardar a última rota navegada em `navigatedRef`.
 
-jsx
-```
+```jsx
 const navigateRef = useRef(navigate);
 useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
@@ -445,20 +459,21 @@ useEffect(() => {
 
 ### 6. Flash de tema errado ao recarregar
 
-Causa: o React montava com tema padrão antes de ler o `localStorage`, causando um piscar.
+**Causa:** o React montava com tema padrão antes de ler o `localStorage`, causando um piscar.
 
-Solução: aplicar o tema direto no `<head>`, antes do bundle carregar.
+**Solução:** aplicar o tema direto no `<head>`, antes do bundle carregar.
 
 ### 7. Perda de dados ao evoluir estrutura
 
-Causa: quando o formato dos objetos salvos mudava, dados antigos quebravam a aplicação.
+**Causa:** quando o formato dos objetos salvos mudava, dados antigos quebravam a aplicação.
 
-Solução: função de migração que preenche campos ausentes com valores padrão, rodando na inicialização.
+**Solução:** função de migração que preenche campos ausentes com valores padrão, rodando na inicialização.
+
+---
 
 ## Melhorias aplicadas
 
 ### Interface e usabilidade
-
 - Layout responsivo completo para tablet (≤1024px) e celular (≤640px e ≤400px)
 - Sidebar de tickets vira barra horizontal no celular
 - Tabelas de configurações e cadastros viram cards empilhados
@@ -466,13 +481,11 @@ Solução: função de migração que preenche campos ausentes com valores padr�
 - Tour guiado com destaque visual, auto-avanço e barra de progresso
 
 ### Performance
-
 - Vite substituindo CRA
 - Pré-carregamento das imagens adjacentes na galeria
 - `useCallback` nas funções de navegação da galeria para evitar re-render
 
 ### Segurança
-
 - Sanitização de entrada em todos os formulários
 - Validação de e-mail e senha
 - Rate limiting de login com bloqueio temporário
@@ -481,72 +494,71 @@ Solução: função de migração que preenche campos ausentes com valores padr�
 - `escapeHtml` para tudo que é reexibido em HTML
 
 ### Acessibilidade
-
 - `aria-label` nos botões sem texto
 - `role="button"` e `tabIndex` em elementos clicáveis que não são botões
 - Contraste adequado nos dois temas
 - Foco visível em campos e botões
 
 ### Qualidade de código
-
 - Componentização precoce (header, galeria, tour isolados)
 - Hooks personalizados (`useTheme`)
 - Utilitários de segurança centralizados em `utils/security.js`
 - Migração de dados para não quebrar `localStorage` antigo
 
+---
+
 ## Próximos passos
 
-- [ ]Migrar para TypeScript
-- [ ]Estudar backend para implementar autenticação real
-- [ ]Construir o SkyGuard, uma simulação de central de monitoramento de segurança
-- [ ]Adicionar testes automatizados (Vitest + Testing Library)
-- [ ]Adicionar CI no GitHub Actions
-- [ ]Melhorar o tour para funcionar bem em telas pequenas
-- [ ]Adicionar `README.md` com screenshots atualizadas
+- [ ] Migrar para TypeScript
+- [ ] Estudar backend para implementar autenticação real
+- [ ] Construir o **SkyGuard**, uma simulação de central de monitoramento de segurança
+- [ ] Adicionar testes automatizados (Vitest + Testing Library)
+- [ ] Adicionar CI no GitHub Actions
+- [ ] Melhorar o tour para funcionar bem em telas pequenas
+- [ ] Adicionar `README.md` com screenshots atualizadas
+
+---
 
 ## Referências
 
 Documentação e materiais que usei como base durante o desenvolvimento.
 
 ### Front-end
-
-- [React — documentação oficial](<https://react.dev/>)
-- [Vite — guia](<https://vitejs.dev/guide/>)
-- [MDN — CSS Custom Properties](<https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties>)
-- [MDN — Media Queries](<https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries>)
-- [MDN — CSS Grid Layout](<https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout>)
-- [MDN — `:has()` selector](<https://developer.mozilla.org/en-US/docs/Web/CSS/:has>)
-- [web.dev — Responsive design](<https://web.dev/responsive-web-design-basics/>)
+- [React — documentação oficial](https://react.dev/)
+- [Vite — guia](https://vitejs.dev/guide/)
+- [MDN — CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- [MDN — Media Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries)
+- [MDN — CSS Grid Layout](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout)
+- [MDN — `:has()` selector](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)
+- [web.dev — Responsive design](https://web.dev/responsive-web-design-basics/)
 
 ### Segurança
-
-- [OWASP — XSS Prevention Cheat Sheet](<https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html>)
-- [OWASP — Content Security Policy Cheat Sheet](<https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html>)
-- [MDN — Content Security Policy](<https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP>)
-- [MDN — X-Frame-Options](<https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>)
+- [OWASP — XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
+- [OWASP — Content Security Policy Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html)
+- [MDN — Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- [MDN — X-Frame-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options)
 
 ### TOTVS Protheus
-
-- [TOTVS — documentação oficial](<https://tdn.totvs.com/>)
-- [TOTVS — Dicionário de dados (SX2, SX3, SIX, SX7)](<https://tdn.totvs.com/display/public/framework/Dicionario>)
+- [TOTVS — documentação oficial](https://tdn.totvs.com/)
+- [TOTVS — Dicionário de dados (SX2, SX3, SIX, SX7)](https://tdn.totvs.com/display/public/framework/Dicionario)
 
 ### Deploy
+- [Vercel — configuração de headers](https://vercel.com/docs/projects/project-configuration#headers)
+- [Vercel — deploy de SPA com Vite](https://vercel.com/guides/deploying-vite-with-vercel)
 
-- [Vercel — configuração de headers](<https://vercel.com/docs/projects/project-configuration#headers>)
-- [Vercel — deploy de SPA com Vite](<https://vercel.com/guides/deploying-vite-with-vercel>)
+---
 
 ## Sobre mim
 
-Maria Costa — estagiária de desenvolvimento, estudante de Cibersegurança na FIAP a partir de 2027.
+**Maria Costa** — estagiária de desenvolvimento, estudante de Cibersegurança na FIAP a partir de 2027.
 
-- E-mail: mmaria.costa@outlook.com
-- LinkedIn: [linkedin.com/in/mmariacosta](<https://www.linkedin.com/in/mmariacosta>)
-- GitHub: [github.com/mmariacosta](<https://github.com/mmariacosta>)
+- E-mail: [mmaria.costa@outlook.com](mailto:mmaria.costa@outlook.com)
+- LinkedIn: [linkedin.com/in/mmariacosta](https://www.linkedin.com/in/mmariacosta)
+- GitHub: [github.com/mmariacosta](https://github.com/mmariacosta)
+
+---
 
 ## Licença
 
-MIT. Veja LICENSE para detalhes.
-
-```
-
+MIT. Veja [LICENSE](LICENSE) para detalhes.
 ```
